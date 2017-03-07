@@ -81,7 +81,7 @@ function getPokemonLocation(pos, map){
             });
             marker.addListener('click', function() {
                 $('#catchPokemonModalHeading').text(data.name);
-                var ime = data.name.toLocaleLowerCase() + ".png"
+                var ime = data.name.toLocaleLowerCase() + ".png";
                 $('.wrapper-img').html('<img src="../all-pokemons/'+ime+'" class="bigPicPokemon">');
                 $('#catchPokemonModal').modal();
             });
@@ -99,7 +99,7 @@ function catchPokemon() {
         data: dataTosend,
         success: function(data){
             if (data.success == true){
-                var msg = "You caught " + data.name;
+                var msg = "You caught a pokemon: " + data.name;
                 alert(msg);
                 prompt("How shall we name it?");
                 var tbody = document.getElementById('playerPokemons');
