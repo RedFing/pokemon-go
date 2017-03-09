@@ -25,11 +25,9 @@ router.post('/getpokemonlocation', function (req,res){
     pool.query('select name, x, y from pokemontype where id=$1', [id], function(err, result1){
         var lok = util.randomLocationInRadius100m(req.body);
         pool.query("insert into sentpokemons (pokemontypeid, lat, lon, expired, expiretimestamp) " +
-            "values($1, $2, $3, $4, CURRENT_TIMESTAMP + interval '10 minutes')", [id, lok.lat, lok.lng, false], function(err, result2){
-            pool.query("select id from sentpokemons order by id desc limit 1", function (err, result3){
-                var rez = {id: result3.rows[0].id, name: result1.rows[0].name, x: result1.rows[0].x, y: result1.rows[0].y, lok: lok};
-                res.send(rez);
-            });
+            "values($1, $2, $3, $4, CURRENT_TIMESTAMP + interval '10 minutes') returning id", [id, lok.lat, lok.lng, false], function(err, result2){
+            var rez = {id: result2.rows[0].id, name: result1.rows[0].name, x: result1.rows[0].x, y: result1.rows[0].y, lok: lok};
+            res.send(rez);
         });
     });
 });

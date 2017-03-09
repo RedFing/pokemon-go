@@ -8,10 +8,6 @@ function authenticator(settings) {
     return function(req, res, next) {
         var routeToCheck = selectRoute(req, settings);
         if (routeToCheck != ""){
-            if (!req.cookies.authCookie) {
-                res.sendStatus(403);
-                return;
-            }
             if (routeToCheck == '/login'){
                 if (!validateEmail(req.body.unmLogin)) {
                     res.sendStatus(403);
@@ -29,7 +25,12 @@ function authenticator(settings) {
                             res.sendStatus(403);
                         }
                     });
+                    return;
                 }
+            }
+            if (!req.cookies.authCookie) {
+                res.sendStatus(403);
+                return;
             }
             var token = util.decipherCookie(req.cookies.authCookie);
             if (moment().isAfter(token.valid)) {

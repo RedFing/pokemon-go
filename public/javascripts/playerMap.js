@@ -56,7 +56,7 @@ function initMap() {
                 center: pos,
                 radius: 100
             });
-            getPokemonLocation(pos, map);
+                getPokemonLocation(pos, map);
         });
 }
 
