@@ -10,6 +10,7 @@ var moment = require('moment');
 moment().format();
 
 var pool = require('../config-postgreSQL');
+var util = require('../util');
 
 router.use('/player', player);
 router.use('/pokemontype', pokemontype);
@@ -32,13 +33,7 @@ router.post('/login', function(req, res) {
         const hash = crypto.createHmac('sha256', secret).update(password).digest('hex');
         pool.query("Select * from player where username=$1" , [req.body.unmLogin], function (err, result) {
             if (result.rows[0].password == hash) {
-                var cipher = crypto.createCipher('aes192', 'a password');
-                var token = JSON.stringify({username: req.body.unmLogin, valid: moment().add(1,'days')});
-                console.log(token);
-                console.log(moment().add(1,'days'));
-                var encrypted = cipher.update(token, 'utf8', 'hex');
-                encrypted += cipher.final('hex');
-                res.cookie('kuki', encrypted);
+                res.cookie('kuki', util.cipherCookie(req.body.unmLogin));
                 res.redirect('/ok');
 
             }

@@ -99,15 +99,20 @@ function catchPokemon() {
         data: dataTosend,
         success: function(data){
             if (data.success == true){
+                console.log("u ifu");
                 var msg = "You caught a pokemon: " + data.name;
                 alert(msg);
-                prompt("How shall we name it?");
+                var customName = prompt("How shall we name it?");
+                if (customName != "") {
+                    console.log("pozivam custom name");
+                    giveNameToPokemon(data.pokemontypeid, customName);
+                }
                 var tbody = document.getElementById('playerPokemons');
                 var tr = document.createElement('tr');
                 var td1 = document.createElement('td');
                 var td2 = document.createElement('td');
                 td1.innerHTML = data.name;
-                td2.innerHTML = "";
+                td2.innerHTML = customName;
                 tr.appendChild(td1);
                 tr.appendChild(td2);
                 tbody.appendChild(tr);
@@ -117,6 +122,20 @@ function catchPokemon() {
             }
             $("#catchPokemonModal").modal('hide');
             marker.setMap(null);
+        },
+        error: function (data) {
+        }
+    });
+}
+
+function giveNameToPokemon(pokemontypeid, customName) {
+    var dataTosend = {customName: customName, pokemontypeid: pokemontypeid};
+    console.log(dataTosend)
+    $.ajax({
+        type: "POST",
+        url: "/playermap/givecustomname",
+        data: dataTosend,
+        success: function(data){
         },
         error: function (data) {
         }
