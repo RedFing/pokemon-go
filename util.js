@@ -3,6 +3,8 @@ var crypto = require('crypto');
 var moment = require('moment');
 moment().format();
 
+// Utility functions
+
 var util = {
     decipherCookie: function decpiherCookie(kuki) {
         var decipher = crypto.createDecipher('aes192', 'a password');
