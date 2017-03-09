@@ -34,9 +34,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(authenticator({
-    routes: ['/ok', '/player', '/pokemontype', '/playerpokemon', '/playerMap', '/playerMap/showtable',
+    routes: ['/ok', '/login', '/player', '/pokemontype', '/playerpokemon', '/playerMap', '/playerMap/showtable',
              '/playerMap/getpokemonlocation', '/playerMap/catchpokemon', '/playerMap/givecustomname', ],
-    encSecret: 'a password'
+    encSecret: 'a password',
+    hashSecret: 'abcdefg'
 }));
 
 app.use('/', index);

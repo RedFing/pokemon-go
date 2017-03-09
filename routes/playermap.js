@@ -12,7 +12,6 @@ router.get('/', function (req,res){
     res.render('playerMap');
 });
 
-
 router.get('/showtable', function (req,res){
     pool.query('select pokemontype.name, playerpokemon.customname from pokemontype INNER JOIN ' +
         'playerpokemon on pokemontype.id = playerpokemon.pokemontypeid where username=$1', [req.authUser], function(err, result) {
@@ -43,7 +42,6 @@ router.post('/catchpokemon', function (req,res){
         });
     }
     else {
-        console.log("pisi u tabelu", req.authUser);
         pool.query('select pokemontypeid from sentpokemons where id=$1', [req.body.id], function(err, result1){
             pool.query('insert into playerpokemon values($1,$2)', [req.authUser, result1.rows[0].pokemontypeid], function(err, result2){
                 pool.query('select name from pokemontype where id=$1', [result1.rows[0].pokemontypeid], function(err, result3){
