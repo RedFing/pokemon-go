@@ -2,7 +2,7 @@ $('document').ready(function(){
     console.log("docR");
     $.ajax({
         type: "GET",
-        url: "/playermap/showTable",
+        url: "/playermap/showtable",
         success: function (data) {
             var tbody = document.getElementById('playerPokemons');
             for (var i = 0; i < data.length; i++){
@@ -64,7 +64,7 @@ function getPokemonLocation(pos, map){
     var dataTosend = pos;
     $.ajax({
         type: "POST",
-        url: "/playermap/getPokemonLocation",
+        url: "/playermap/getpokemonlocation",
         data: dataTosend,
         success: function(data){
             id = data.id;
@@ -95,7 +95,7 @@ function catchPokemon() {
     var dataTosend = {id: id};
     $.ajax({
         type: "POST",
-        url: "/playermap/catchPokemon",
+        url: "/playermap/catchpokemon",
         data: dataTosend,
         success: function(data){
             if (data.success == true){

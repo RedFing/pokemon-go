@@ -14,12 +14,12 @@ var playermap = require('./routes/playermap');
 var pool = require('./config-postgreSQL');
 const crypto = require('crypto');
 
-
 const secret = 'abcdefg';
 var moment = require('moment');
-moment().format();
 
 var app = express();
+
+var authenticator = require('./helpers/authenticator');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,37 +33,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(function (req,res, next) {
-
-    nizRuta = ['/ok', '/player', '/pokemontype', '/playerpokemon', '/playerMap'];
-    for (var i = 0; i < nizRuta.length; i++){
-        if (req.path == nizRuta[i]){
-            if (!req.cookies.kuki){
-                res.sendStatus(403);
-                return;
-            }
-            var cipher = crypto.createCipher('aes192', 'a password');
-            var decipher = crypto.createDecipher('aes192', 'a password');
-            console.log(1,"zasticena ruta", req.path);
-            var encrypted = req.cookies.kuki;
-            var decrypted = decipher.update(encrypted, 'hex', 'utf8');
-            decrypted += decipher.final('utf8');
-            var token = JSON.parse(decrypted);
-            console.log(5,token);
-            if (moment().isAfter(token.valid)){
-                console.log("EXPIRED COOKIE");
-                res.sendStatus(403);
-            }
-            pool.query("Select * from player where username=$1" , [token.username], function (err, result) {
-                if (result.rows[0].username != token.username) {
-                    res.sendStatus(403);
-                }
-            });
-            break;
-        }
-    }
-    next();
-});
+app.use(authenticator({
+    routes: ['/ok', '/player', '/pokemontype', '/playerpokemon', '/playerMap', '/playerMap/showtable',
+             '/playerMap/getpokemonlocation', '/playerMap/catchpokemon', '/playerMap/givecustomname', ],
+    encSecret: 'a password'
+}));
 
 app.use('/', index);
 app.use('/player', player);

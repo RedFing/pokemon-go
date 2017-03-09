@@ -6,16 +6,12 @@ var router = express.Router();
 var pool = require('../config-postgreSQL');
 
 router.get('/', function(req, res) {
-    var niz = [];
     pool.query('Select * from pokemontype', function(err, result) {
         if(err) {
             res.sendStatus(400);
         }
         else{
-            for (var i = 0; i < result.rows.length; i++) {
-                niz[i] = result.rows[i];
-            }
-            res.render('pokemonType', {niz: niz});
+            res.render('pokemonType', {result: result.rows});
         }
     });
 });
@@ -33,7 +29,6 @@ router.delete('/delete', function(req, res) {
     pool.query("delete from pokemontype where id = $1" , [req.body.pokeid], function(err, result) {
         if(err)
             res.sendStatus(400);
-
         else
             res.sendStatus(200);
     });

@@ -24,8 +24,8 @@
         <div class="form-group">
             <label for="pokelist">Pokemon:</label>
             <select class="form-control" id="pokelist">
-                <% for (var i = 0; i < niz.length; i++){ %>
-                    <option value=<%= niz[i].name %>><%= niz[i].name %></option>
+                <% for (var i = 0; i < result.length; i++){ %>
+                    <option value=<%= result[i].name %>><%= result[i].name %></option>
                 <% } %>
             </select>
         </div>

@@ -7,10 +7,9 @@ var playerpokemon = require('../routes/playerpokemon');
 var playermap = require('../routes/playermap');
 
 var moment = require('moment');
-moment().format();
 
 var pool = require('../config-postgreSQL');
-var util = require('../util');
+var util = require('../helpers/util');
 
 router.use('/player', player);
 router.use('/pokemontype', pokemontype);
@@ -33,8 +32,8 @@ router.post('/login', function(req, res) {
         const hash = crypto.createHmac('sha256', secret).update(password).digest('hex');
         pool.query("Select * from player where username=$1" , [req.body.unmLogin], function (err, result) {
             if (result.rows[0].password == hash) {
-                res.cookie('kuki', util.cipherCookie(req.body.unmLogin));
-                res.redirect('/ok');
+                res.cookie('authCookie', util.cipherCookie(req.body.unmLogin));
+                res.redirect('/playermap');
 
             }
             else {
@@ -57,22 +56,12 @@ router.post('/register', function(req, res) {
                 var cipher = crypto.createCipher('aes192', 'a password');
                 var encrypted = cipher.update(req.body.unmRegister, 'utf8', 'hex');
                 encrypted += cipher.final('hex');
-                res.cookie('kuki', encrypted);
+                res.cookie('authCookie', encrypted);
                 res.redirect('/');
             }
         });
     }
 });
-
-router.get('/ok', function (req,res) {
-
-    if (req.body.unmLogin != "javelin33@hotmail.com")
-        res.redirect('/playermap');
-    else
-        res.render('index');
-});
-
-
 
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

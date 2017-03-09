@@ -6,13 +6,8 @@ var router = express.Router();
 var pool = require('../config-postgreSQL');
 
 router.get('/', function(req, res) {
-    var niz = [];
     pool.query('Select * from player', function(err, result) {
-        for (var i = 0; i < result.rows.length; i++) {
-            niz[i] = result.rows[i];
-            console.log(niz[i]);
-        }
-        res.render('player', {niz: niz});
+        res.render('player', {result: result.rows});
     });
 });
 

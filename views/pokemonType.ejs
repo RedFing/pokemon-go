@@ -64,10 +64,10 @@
         </tr>
         </thead>
         <tbody>
-        <% for (var i = 0; i < niz.length; i++){ %>
+        <% for (var i = 0; i < result.length; i++){ %>
         <tr id=<%= "tRow" + i %>>
-            <td><%= niz[i].id %></td>
-            <td><%= niz[i].name %></td>
+            <td><%= result[i].id %></td>
+            <td><%= result[i].name %></td>
             <td><button class="btn" type="button" onclick="openEditModal(<%= i %>)">Edit</button></td>
             <td><button class="btn" type="button" onclick="deleteRow(<%= i %>)">Delete</button></td>
         </tr>

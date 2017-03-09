@@ -70,11 +70,11 @@
         </tr>
         </thead>
         <tbody>
-        <% for (var i = 0; i < niz.length; i++){ %>
+        <% for (var i = 0; i < result.length; i++){ %>
         <tr id=<%= "tRow" + i %>>
-            <td><%= niz[i].username %></td>
-            <td><%= niz[i].firstname %></td>
-            <td><%= niz[i].lastname %></td>
+            <td><%= result[i].username %></td>
+            <td><%= result[i].firstname %></td>
+            <td><%= result[i].lastname %></td>
             <td><button class="btn" type="button" onclick="openEditModal(<%= i %>)">Edit</button></td>
             <td><button class="btn" type="button" onclick="deleteRow(<%= i %>)">Delete</button></td>
         </tr>
