@@ -57,6 +57,7 @@ function initMap() {
                 radius: 100
             });
                 getPokemonLocation(pos, map);
+                getOtherPlayersLocation(pos, map);
         });
 }
 
@@ -87,6 +88,21 @@ function getPokemonLocation(pos, map){
             });
         },
         error: function (data) {
+        }
+    });
+}
+
+function getPokemonLocation(pos, map){
+    var dataTosend = pos;
+    $.ajax({
+        type: "POST",
+        url: "/playermap/getotherplayerslocation",
+        data: dataTosend,
+        success: function(data) {
+            console.log(data);
+        },
+        error: function (data) {
+
         }
     });
 }
@@ -123,7 +139,10 @@ function catchPokemon() {
             $("#catchPokemonModal").modal('hide');
             marker.setMap(null);
         },
-        error: function (data) {
+        error: function () {
+            alert("Pokemon is not here anymore!");
+            $("#catchPokemonModal").modal('hide');
+            marker.setMap(null);
         }
     });
 }

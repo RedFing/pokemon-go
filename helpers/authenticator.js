@@ -14,8 +14,7 @@ function authenticator(settings) {
                     return;
                 }
                 else {
-                    var password = req.body.passLogin;
-                    const hash = crypto.createHmac('sha256', settings.hashSecret).update(password).digest('hex');
+                    const hash = crypto.createHmac('sha256', settings.hashSecret).update(req.body.passLogin).digest('hex');
                     pool.query("Select * from player where username=$1" , [req.body.unmLogin], function (err, result) {
                         if (result.rows[0].password == hash) {
                             res.cookie('authCookie', util.cipherCookie(req.body.unmLogin));
@@ -42,6 +41,7 @@ function authenticator(settings) {
                     res.sendStatus(403);
                 else {
                     req.authUser = token.username;
+                    pool.query("Update player set isonline=true where username=$1", [token.username]);
                     next();
                 }
             });
@@ -55,12 +55,10 @@ function selectRoute(req, settings){
     for (var i = 0; i < settings.routes.length; i++) {
         if (req.path.toLowerCase() == settings.routes[i].toLowerCase()) { // case sensitive
             return settings.routes[i];
-
         }
     }
     return "";
 }
-
 
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

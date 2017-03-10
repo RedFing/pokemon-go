@@ -17,7 +17,6 @@ router.use('/playermap', playermap);
 
 const crypto = require('crypto');
 
-
 router.get('/', function(req, res) {
     res.render('index');
 });
@@ -30,8 +29,7 @@ router.post('/register', function(req, res) {
     if(!validateEmail(req.body.unmRegister))
         res.sendStatus(400);
     else {
-        var password = req.body.passRegister;
-        const hash = crypto.createHmac('sha256', secret).update(password).digest('hex');
+        const hash = crypto.createHmac('sha256', secret).update(req.body.passRegister).digest('hex');
         pool.query('insert into player values ($1,$2,$3,$4)', [req.body.unmRegister, req.body.frstnmRegister, req.body.lstnmRegister, hash], function (err, result) {
             if (err)
                 res.sendStatus(400);
@@ -45,7 +43,5 @@ router.post('/register', function(req, res) {
         });
     }
 });
-
-
 
 module.exports = router;
