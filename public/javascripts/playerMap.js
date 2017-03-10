@@ -1,5 +1,4 @@
 $('document').ready(function(){
-    console.log("docR");
     $.ajax({
         type: "GET",
         url: "/playermap/showtable",
@@ -22,6 +21,7 @@ $('document').ready(function(){
         }
     });
 });
+
 var map;
 function initMap() {
     console.log("init map");
@@ -38,15 +38,15 @@ function initMap() {
             map.setCenter(pos);
             var ikonica = {
                 url: "../you-marker.png",
-                size: new google.maps.Size(64,58),
+                size: new google.maps.Size(48,48),
                 origin: new google.maps.Point(0,0)
             };
-            var marker = new google.maps.Marker({
+            new google.maps.Marker({
                 position: pos,
                 map: map,
                 icon: ikonica
             });
-            var krug = new google.maps.Circle({
+            new google.maps.Circle({
                 strokeColor: '#0000FF',
                 strokeOpacity: 0.2,
                 strokeWeight: 2,
@@ -56,8 +56,18 @@ function initMap() {
                 center: pos,
                 radius: 100
             });
+            new google.maps.Circle({
+                strokeColor: '#00FF00',
+                strokeOpacity: 0.2,
+                strokeWeight: 2,
+                fillColor: '#00FF00',
+                fillOpacity: 0.05,
+                map: map,
+                center: pos,
+                radius: 3000
+            });
                 getPokemonLocation(pos, map);
-                getOtherPlayersLocation(pos, map);
+                getOtherPlayersLocation(map);
         });
 }
 
@@ -92,17 +102,28 @@ function getPokemonLocation(pos, map){
     });
 }
 
-function getPokemonLocation(pos, map){
-    var dataTosend = pos;
+function getOtherPlayersLocation(map){
     $.ajax({
-        type: "POST",
+        type: "GET",
         url: "/playermap/getotherplayerslocation",
-        data: dataTosend,
         success: function(data) {
             console.log(data);
+            for (var i = 0; i < data.length; i++){
+                var playerUsername = data[i].username;
+                var lok = {lat: data[i].lat+ 0.0005, lng: data[i].lon};
+                console.log(lok);
+                marker = new google.maps.Marker({
+                    position: lok,
+                    map: map,
+                    zIndex: 10000,
+                });
+                console.log("stavio marker");
+                marker.addListener('click', function() {
+                    playerInfo(playerUsername);
+                });
+            }
         },
         error: function (data) {
-
         }
     });
 }
@@ -147,9 +168,29 @@ function catchPokemon() {
     });
 }
 
+function playerInfo(username) {
+    $("#playerInfoModal").modal('show');
+    $("#playerInfoModalHeading").text("Player: " + username);
+    $("#playerInfoModalFooter").html('<button onclick="sendChallenge(\''+username+'\')">Send challenge</button>');
+}
+
+function sendChallenge(username){
+    console.log("usao");
+    $.ajax({
+        type: "POST",
+        url: "/playermap/sendchallenge",
+        data: {username: username},
+        success: function(data){
+            $('#playerInfoModal').modal('hide');
+        },
+        error: function (data) {
+        }
+    });
+}
+
 function giveNameToPokemon(pokemontypeid, customName) {
     var dataTosend = {customName: customName, pokemontypeid: pokemontypeid};
-    console.log(dataTosend)
+    console.log(dataTosend);
     $.ajax({
         type: "POST",
         url: "/playermap/givecustomname",

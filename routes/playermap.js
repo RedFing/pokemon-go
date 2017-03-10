@@ -33,9 +33,10 @@ router.post('/getpokemonlocation', function (req,res){
     });
 });
 
-router.post('/getotherplayerslocation', function (req,res){
+router.get('/getotherplayerslocation', function (req,res){
     var response = [];
     pool.query('Select * from player where isonline=true', function(err, result){
+        console.log("auth user", req.authUser);
         var userLoc;
         for (var i = 0; i < result.rows.length; i++){
             if (result.rows[i].username == req.authUser){
@@ -45,11 +46,12 @@ router.post('/getotherplayerslocation', function (req,res){
         for (var i = 0; i < result.rows.length; i++){
             if (result.rows[i].username != req.authUser){
                 if (util.checkIfInRadius(userLoc.lat, userLoc.lng, result.rows[i].lat, result.rows[i].lon)){
-                    var userData = {username: result.rows[i].username, lat: result.rows[i].lat, lon: result.rows[i].lon }
+                    var userData = {username: result.rows[i].username, lat: result.rows[i].lat, lon: result.rows[i].lon };
                     response.push(userData);
                 }
             }
         }
+        console.log(response);
         res.send(response);
     });
 });
@@ -82,6 +84,14 @@ router.post('/givecustomname', function (req,res){
                [req.body.customName, req.authUser, req.body.pokemontypeid], function(err, result){
         res.sendStatus(200);
     });
+});
+
+router.post('/sendchallenge', function (req,res){
+    console.log(req.authUser, req.body.username);
+    pool.query('insert into challenges (sentby,sentto,at)values($1,$2,localtimestamp)',
+        [req.authUser, req.body.username], function(err, result){
+            res.sendStatus(200);
+        });
 });
 
 router.get('/logout', function (req, res) {

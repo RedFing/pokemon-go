@@ -35,7 +35,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(authenticator({
     routes: ['/ok', '/login', '/player', '/pokemontype', '/playerpokemon', '/playerMap', '/playerMap/showtable',
-             '/playerMap/getpokemonlocation', '/playerMap/catchpokemon', '/playerMap/givecustomname', '/playermap/logout', '/playermap/getotherplayerslocation'],
+             '/playerMap/getpokemonlocation', '/playerMap/catchpokemon', '/playerMap/givecustomname',
+             '/playermap/logout', '/playermap/getotherplayerslocation', '/playermap/sendchallenge'],
     encSecret: 'a password',
     hashSecret: 'abcdefg'
 }));
