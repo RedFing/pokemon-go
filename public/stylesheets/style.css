@@ -50,3 +50,19 @@ nav {
 #logo {
   height: 30px;
 }
+
+#map {
+  height: 500px;
+}
+.bigPicPokemon {
+  height: 200px;
+}
+
+#logout-link {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#catchPokemonModalBody {
+  padding: 10px;
+}

@@ -20,7 +20,6 @@ var moment = require('moment');
 var app = express();
 
 var authenticator = require('./helpers/authenticator');
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -36,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(authenticator({
     routes: ['/ok', '/login', '/player', '/pokemontype', '/playerpokemon', '/playerMap', '/playerMap/showtable',
              '/playerMap/getpokemonlocation', '/playerMap/catchpokemon', '/playerMap/givecustomname',
-             '/playermap/logout', '/playermap/getotherplayerslocation', '/playermap/sendchallenge'],
+             '/playermap/logout', '/playermap/getotherplayerslocation', '/playermap/sendchallenge', '/playermap/getchallenge'],
     encSecret: 'a password',
     hashSecret: 'abcdefg'
 }));

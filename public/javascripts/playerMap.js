@@ -14,6 +14,7 @@ $('document').ready(function(){
                 tr.appendChild(td2);
                 tbody.appendChild(tr);
             }
+            getChallenges();
             initMap();
         },
         error: function () {
@@ -24,7 +25,6 @@ $('document').ready(function(){
 
 var map;
 function initMap() {
-    console.log("init map");
     var pozicijaIgraca;
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 18
@@ -107,17 +107,15 @@ function getOtherPlayersLocation(map){
         type: "GET",
         url: "/playermap/getotherplayerslocation",
         success: function(data) {
-            console.log(data);
+
             for (var i = 0; i < data.length; i++){
                 var playerUsername = data[i].username;
                 var lok = {lat: data[i].lat+ 0.0005, lng: data[i].lon};
-                console.log(lok);
                 marker = new google.maps.Marker({
                     position: lok,
                     map: map,
                     zIndex: 10000,
                 });
-                console.log("stavio marker");
                 marker.addListener('click', function() {
                     playerInfo(playerUsername);
                 });
@@ -136,12 +134,10 @@ function catchPokemon() {
         data: dataTosend,
         success: function(data){
             if (data.success == true){
-                console.log("u ifu");
                 var msg = "You caught a pokemon: " + data.name;
                 alert(msg);
                 var customName = prompt("How shall we name it?");
                 if (customName != "") {
-                    console.log("pozivam custom name");
                     giveNameToPokemon(data.pokemontypeid, customName);
                 }
                 var tbody = document.getElementById('playerPokemons');
@@ -168,6 +164,19 @@ function catchPokemon() {
     });
 }
 
+function giveNameToPokemon(pokemontypeid, customName) {
+    var dataTosend = {customName: customName, pokemontypeid: pokemontypeid};
+    $.ajax({
+        type: "POST",
+        url: "/playermap/givecustomname",
+        data: dataTosend,
+        success: function(data){
+        },
+        error: function (data) {
+        }
+    });
+}
+
 function playerInfo(username) {
     $("#playerInfoModal").modal('show');
     $("#playerInfoModalHeading").text("Player: " + username);
@@ -175,7 +184,6 @@ function playerInfo(username) {
 }
 
 function sendChallenge(username){
-    console.log("usao");
     $.ajax({
         type: "POST",
         url: "/playermap/sendchallenge",
@@ -188,17 +196,40 @@ function sendChallenge(username){
     });
 }
 
-function giveNameToPokemon(pokemontypeid, customName) {
-    var dataTosend = {customName: customName, pokemontypeid: pokemontypeid};
-    console.log(dataTosend);
+function getChallenges(){
     $.ajax({
-        type: "POST",
-        url: "/playermap/givecustomname",
-        data: dataTosend,
+        type: "GET",
+        url: "/playermap/getchallenge",
         success: function(data){
+            var tbody = document.getElementById('tableChallengesBody');
+            for (var i = 0; i < data.length; i++){
+                var tr = document.createElement('tr');
+                tr.id = "t-row-"+data[i].id;
+                var td1 = document.createElement('td');
+                var td2 = document.createElement('td');
+                var td3 = document.createElement('td');
+                td1.innerHTML = data[i].sentby;
+                td2.innerHTML = "<button type='button' onclick='acceptChallenge("+data[i].id+")'>Accept</button>";
+                td3.innerHTML = "<button type='button' onclick='declineChallenge("+data[i].id+")'>Decline</button>";
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                tbody.appendChild(tr);
+            }
         },
         error: function (data) {
         }
     });
 }
 
+function acceptChallenge(id){
+    alert("You accepted challenge with id: " + id);
+    var row = document.getElementById("t-row-"+ id);
+    row.parentElement.removeChild(row);
+}
+
+function declineChallenge(id){
+    alert("You declined challenge with id: " + id);
+    var row = document.getElementById("t-row-"+ id);
+    row.parentElement.removeChild(row);
+}
