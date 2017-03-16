@@ -56,27 +56,41 @@ router.get('/getotherplayerslocation', function (req,res){
 });
 
 router.post('/catchpokemon', function (req,res){
-    var chance = Math.random();
-    if (chance < 0.35){
-        pool.query('delete from sentpokemons where id=$1', [req.body.id], function(err, result){
-            res.send({success: false});
-        });
-    }
-    else {
-        pool.query('select pokemontypeid, expiretimestamp from sentpokemons where id=$1 and expiretimestamp > localtimestamp', [req.body.id], function(err, result1){
-            if (result1.rows.length == 0) {
-                res.sendStatus(400);
-                return;
-            }
-            pool.query('insert into playerpokemon values($1,$2)', [req.authUser, result1.rows[0].pokemontypeid], function(err, result2){
-                pool.query('select name from pokemontype where id=$1', [result1.rows[0].pokemontypeid], function(err, result3){
-                    pool.query('delete from sentpokemons where id=$1', [req.body.id]);
-                    res.send({success: true, name: result3.rows[0].name, pokemontypeid: result1.rows[0].pokemontypeid});
-                });
-            });
-        });
-    }
+    var pokemons = new (require('../models/pokemons.js'))();
+    pokemons.id = req.body.id;
+    pokemons.user = req.authUser;
+    pokemons.catch(function (data) {
+        res.send(data);
+    }, function (err) {
+        res.sendStatus(400);
+    });
 });
+
+
+/*
+ var chance = Math.random();
+ if (chance < 0.35){
+ pool.query('delete from sentpokemons where id=$1', [req.body.id], function(err, result){
+ res.send({success: false});
+ });
+ }
+ else {
+ pool.query('select pokemontypeid, expiretimestamp from sentpokemons where id=$1 and expiretimestamp > localtimestamp', [req.body.id], function(err, result1){
+ if (result1.rows.length == 0) {
+ res.sendStatus(400);
+ return;
+ }
+ pool.query('insert into playerpokemon values($1,$2)', [req.authUser, result1.rows[0].pokemontypeid], function(err, result2){
+ pool.query('select name from pokemontype where id=$1', [result1.rows[0].pokemontypeid], function(err, result3){
+ pool.query('delete from sentpokemons where id=$1', [req.body.id]);
+ res.send({success: true, name: result3.rows[0].name, pokemontypeid: result1.rows[0].pokemontypeid});
+ });
+ });
+ });
+ }*/
+
+
+
 
 router.post('/givecustomname', function (req,res){
     pool.query('update playerpokemon set customname=$1 where username=$2 and pokemontypeid=$3',

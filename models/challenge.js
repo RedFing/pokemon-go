@@ -1,9 +1,7 @@
 /**
  * Created by Javelin on 16.3.2017.
  */
-var crypto = require('crypto');
-var moment = require('moment');
-var util = require('../helpers/util');
+
 var pool = require('../config-postgreSQL');
 
 function challenge() {
