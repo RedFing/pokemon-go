@@ -8,6 +8,7 @@ var pool = require('../config-postgreSQL');
 var crypto = require('crypto');
 var util = require('../helpers/util');
 var moment = require('moment');
+var binder = require('model-binder');
 
 router.get('/', function (req,res){
     res.render('playerMap');
@@ -84,18 +85,29 @@ router.post('/givecustomname', function (req,res){
     });
 });
 
-router.post('/sendchallenge', function (req,res){
-    pool.query('insert into challenges (sentby,sentto,at,delivered)values($1,$2,localtimestamp, false)',
-        [req.authUser, req.body.username], function(err, result){
-            res.sendStatus(200);
-        });
+router.post('/sendchallenge', binder(require('../models/challenge.js')), function (req,res){
+   //console.log(req.requestModel);
+   var challenge = req.requestModel;
+   challenge.sentby = req.authUser;
+   challenge.create(function (data) {
+       res.sendStatus(200);
+   }, function (err) {
+       res.sendStatus(400);
+   });
 });
 
 router.get('/getchallenge', function (req,res){
-    pool.query('update challenges set delivered=true where delivered=false and sentto=$1 returning *',
+    var challenge = new (require('../models/challenge.js'))();
+    challenge.sentto = req.authUser;
+    challenge.getByRecipient(function (data) {
+        res.send(data);
+    }, function (err) {
+        res.sendStatus(400);
+    });
+   /* pool.query('update challenges set delivered=true where delivered=false and sentto=$1 returning *',
         [req.authUser], function(err, result){
             res.send(result.rows);
-        });
+        });*/
 });
 
 router.get('/logout', function (req, res) {

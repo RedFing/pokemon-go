@@ -30,7 +30,7 @@ var util = {
         encrypted += cipher.final('hex');
         return encrypted;
     },
-    checkIfInRadius: function checkIFInRadius(lat1, lon1, lat2, lon2){
+    checkIfInRadius: function checkIfInRadius(lat1, lon1, lat2, lon2){
         if (getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) < 3.0) return true;
         else return false;
     }

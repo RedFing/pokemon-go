@@ -187,7 +187,7 @@ function sendChallenge(username){
     $.ajax({
         type: "POST",
         url: "/playermap/sendchallenge",
-        data: {username: username},
+        data: {sentto: username},
         success: function(data){
             $('#playerInfoModal').modal('hide');
         },
@@ -201,6 +201,7 @@ function getChallenges(){
         type: "GET",
         url: "/playermap/getchallenge",
         success: function(data){
+            console.log(data);
             var tbody = document.getElementById('tableChallengesBody');
             for (var i = 0; i < data.length; i++){
                 var tr = document.createElement('tr');
