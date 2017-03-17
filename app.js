@@ -6,9 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
-var player = require('./routes/player');
-var pokemontype = require('./routes/pokemontype');
-var playerpokemon = require('./routes/playerpokemon');
+var adminpanel = require('./routes/adminpanel')
 var playermap = require('./routes/playermap');
 
 var pool = require('./config-postgreSQL');
@@ -33,17 +31,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(authenticator({
-    routes: ['/ok', '/login', '/player', '/pokemontype', '/playerpokemon', '/playerMap', '/playerMap/showtable',
-             '/playerMap/getpokemonlocation', '/playerMap/catchpokemon', '/playerMap/givecustomname',
-             '/playermap/logout', '/playermap/getotherplayerslocation', '/playermap/sendchallenge', '/playermap/getchallenge'],
+    routes: ['/ok', '/login', '/register', '/player', '/pokemontype', '/playerpokemon', '/playerMap', '/playerMap/showtable',
+             '/playerMap/getpokemonlocation', '/playerMap/catchpokemon', '/playerMap/givecustomname', '/playermap/logout',
+             '/playermap/getotherplayerslocation', '/playermap/sendchallenge', '/playermap/getchallenge'],
     encSecret: 'a password',
     hashSecret: 'abcdefg'
 }));
 
 app.use('/', index);
-app.use('/player', player);
-app.use('/pokemontype', pokemontype);
-app.use('/playerpokemon', playerpokemon);
+app.use('/adminpanel', adminpanel);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

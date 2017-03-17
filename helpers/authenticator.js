@@ -26,6 +26,33 @@ function authenticator(settings) {
                     return;
                 }
             }
+            else if (routeToCheck == '/register'){
+                console.log("kreno registrovati");
+                if(!validateEmail(req.body.unmRegister)){
+                    res.sendStatus(400);
+                    return;
+                }
+                else {
+                    var hash = crypto.createHmac('sha256', settings.hashSecret).update(req.body.passRegister).digest('hex');
+                    console.log("upisujem u bazu", req.body.unmRegister, req.body.frstnmRegister, req.body.lstnmRegister, hash);
+                    pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [req.body.unmRegister, req.body.frstnmRegister, req.body.lstnmRegister, hash], function (err, result) {
+                        if (err) {
+                            console.log("greska");
+                            res.sendStatus(400);
+                            return;
+                        }
+                        else {
+                            var cipher = crypto.createCipher('aes192', settings.encSecret);
+                            var encrypted = cipher.update(req.body.unmRegister, 'utf8', 'hex');
+                            encrypted += cipher.final('hex');
+                            res.cookie('authCookie', encrypted);
+                            res.redirect('/');
+                            return;
+                        }
+                    });
+                }
+                return;
+            }
             if (!req.cookies.authCookie) {
                 res.sendStatus(403);
                 return;
