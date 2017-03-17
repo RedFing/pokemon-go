@@ -3,7 +3,6 @@ var moment = require('moment');
 var util = require('../helpers/util');
 var pool = require('../config-postgreSQL');
 
-
 function authenticator(settings) {
     return function(req, res, next) {
         var routeToCheck = selectRoute(req, settings);

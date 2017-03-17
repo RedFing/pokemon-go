@@ -18,6 +18,7 @@ function challenge() {
                 success();
             });
     };
+
     this.getByRecipient = function (success, error) {
         pool.query('update challenges set delivered=true where delivered=false and sentto=$1 returning *',
             [$this.sentto], function(err, result){
