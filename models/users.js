@@ -30,6 +30,17 @@ function users() {
             success(response);
         });
     };
+
+    this.logOut = function (success, error) {
+        pool.query('update player set isonline=false where username=$1', [$this.user], function(err, result){
+            if (err){
+                error();
+            }
+            else {
+                success();
+            }
+        });
+    };
 }
 
 module.exports = users;

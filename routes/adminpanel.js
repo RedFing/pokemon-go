@@ -29,7 +29,7 @@ router.delete('/player/delete', function (req,res) {
         else
             res.sendStatus(200);
     });
-})
+});
 
 router.post('/player/edit', function(req, res) {
     var {unameOld, unameNew, firstnameNew, lastnameNew} = req.body;

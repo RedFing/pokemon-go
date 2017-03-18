@@ -87,9 +87,14 @@ router.get('/getchallenge', function (req,res){
 });
 
 router.get('/logout', function (req, res) {
-   pool.query('update player set isonline=false where username=$1', [req.authUser], function(err, result){
+    var users = new (require('../models/users.js'))();
+    users.user = req.authUser;
+    users.logOut(function(){
        res.redirect('/');
-   });
+    }, function () {
+        res.sendStatus(400);
+    });
+
 });
 
 module.exports = router;
