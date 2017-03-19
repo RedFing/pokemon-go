@@ -50,13 +50,21 @@ function pokemons() {
     };
 
     this.getLocation = function (success, error) {
-        var id = Math.floor(Math.random() * 20) + 1;
-        pool.query('select name, x, y from pokemontype where id=$1', [id], function(err, result1){
-            pool.query('update player set lat=$1, lon=$2 where username=$3', [$this.userLat, $this.userLng, $this.user]);
-            var lok = util.randomLocationInRadius100m({lat: $this.userLat, lng: $this.userLng});
+        pool.query('update player set lat=$1, lon=$2 where username=$3', [$this.userLat, $this.userLng, $this.user]); // update player location
+        pool.query('select * from pokemontype order by id asc', function (err, result) {
+            var chances = generateChances(result.rows); // generate chances array
+            var randomId = chances[Math.floor(Math.random() * chances.length)]; // select random array element
+            var selectedPokemon = result.rows[randomId - 1]; // select pokemon with random id
+            var lok = util.randomLocationInRadius100m({lat: $this.userLat, lng: $this.userLng}); // generate random spawn location
             pool.query("insert into sentpokemons (pokemontypeid, lat, lon, expired, expiretimestamp) " +
-                "values($1, $2, $3, $4, CURRENT_TIMESTAMP + interval '10 minutes') returning id", [id, lok.lat, lok.lng, false], function(err, result2){
-                success({id: result2.rows[0].id, name: result1.rows[0].name, x: result1.rows[0].x, y: result1.rows[0].y, lok: lok});
+                "values($1, $2, $3, $4, CURRENT_TIMESTAMP + interval '10 minutes') returning id", [randomId, lok.lat, lok.lng, false], function (err, result2) {
+                success({
+                    id: result2.rows[0].id,
+                    name: selectedPokemon.name,
+                    x: selectedPokemon.x,
+                    y: selectedPokemon.y,
+                    lok: lok
+                });
             });
         });
     };
@@ -72,6 +80,17 @@ function pokemons() {
             }
         });
     }
+}
+
+function generateChances(tableRows) {
+    var chances = [];
+    for (var i = 0; i < tableRows.length; i++){
+        var rarity = tableRows[i].rarity;
+        for (var j = 0; j < rarity; j++){
+            chances.push(tableRows[i].id);
+        }
+    }
+    return chances;
 }
 
 module.exports = pokemons;

@@ -14,7 +14,6 @@ function openEditModal(i) {
     $('#editPokemonTypeModal').modal();
 }
 
-
 function editRow(i){
     var rowID = "tRow" + i;
     var row = document.getElementById(rowID);
@@ -47,7 +46,6 @@ function editRow(i){
     });
 }
 
-
 function deleteRow(i){
     var rowID = "tRow" + i;
     var row = document.getElementById(rowID);
@@ -66,7 +64,6 @@ function deleteRow(i){
         }
     });
 }
-
 
 function addPokemonType(){
     var dataToSend = {
