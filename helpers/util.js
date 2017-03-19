@@ -32,6 +32,10 @@ var util = {
     checkIfInRadius: function checkIfInRadius(lat1, lon1, lat2, lon2){
         if (getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) < 3.0) return true;
         else return false;
+    },
+    hashPassword: function hashPassword(plainPass) {
+        var hash = crypto.createHmac('sha256', 'abcdefg').update(plainPass).digest('hex');
+        return hash;
     }
 };
 

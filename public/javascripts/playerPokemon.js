@@ -7,7 +7,7 @@ function makeConnection() {
         customname: document.getElementById('customNameConnect').value};
     $.ajax({
         type: "POST",
-        url: "/playerpokemon/add",
+        url: "/adminpanel/playerpokemon/add",
         data: dataToSend,
         success: function (data) {
         },
@@ -27,7 +27,7 @@ function showConnections() {
     else {
         $.ajax({
             type: "POST",
-            url: "/playerpokemon/show",
+            url: "/adminpanel/playerpokemon/show",
             data: dataToSend,
             success: function (data) {
                 $("#playerPokemonTableBody").empty();
@@ -63,7 +63,7 @@ function deleteRow(i){
     };
     $.ajax({
         type: "DELETE",
-        url: "/playerpokemon/delete",
+        url: "/adminpanel/playerpokemon/delete",
         data: dataToSend,
         success: function (data) {
             row.parentNode.removeChild(row);

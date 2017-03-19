@@ -1,5 +1,4 @@
 function openEditModal(i) {
-    //console.log("otvaram modal");
     var rowID = "tRow" + i;
     var row = document.getElementById(rowID);
     $('#unmEdit').val(row.cells[0].innerHTML);
@@ -12,7 +11,6 @@ function openEditModal(i) {
 }
 
 function editRow(i){
-    //console.log("editujem red");
     var rowID = "tRow" + i;
     var row = document.getElementById(rowID);
     var dataToSend = {
@@ -24,12 +22,16 @@ function editRow(i){
     };
     $.ajax({
         type: "POST",
-        url: "/player/edit",
+        url: "/adminpanel/player/edit",
         data: dataToSend,
         success: function (data) {
-            row.cells[0].innerHTML = dataToSend.unameNew;
-            row.cells[1].innerHTML = dataToSend.firstnameNew;
-            row.cells[2].innerHTML = dataToSend.lastnameNew;
+            console.log(data);
+            row.cells[0].innerHTML = data.username;
+            row.cells[1].innerHTML = data.firstname;
+            row.cells[2].innerHTML = data.lastname;
+            row.cells[3].innerHTML = data.lat;
+            row.cells[4].innerHTML = data.lon;
+            row.cells[5].innerHTML = data.isonline;
         },
         error: function () {
             alert('Cannot edit data in table!');
@@ -38,18 +40,14 @@ function editRow(i){
 }
 
 function deleteRow(i){
-    //console.log("delete " + i);
     var rowID = "tRow" + i;
     var row = document.getElementById(rowID);
     var dataToSend = {
-        action: 'delete',
         uname: row.cells[0].innerHTML,
-        firstname: row.cells[1].innerHTML,
-        lastname: row.cells[2].innerHTML
     };
     $.ajax({
         type: "DELETE",
-        url: "/player/delete",
+        url: "/adminpanel/player/delete",
         data: dataToSend,
         success: function (data) {
             row.parentNode.removeChild(row);
@@ -61,16 +59,14 @@ function deleteRow(i){
 }
 
 function addPlayer(){
-    //console.log("dodajem igraca");
     var dataToSend = {
-        action: 'add',
         uname: document.getElementById('unm').value,
         firstname: document.getElementById('frstnm').value,
-        lastname: document.getElementById('lstnm').value};
-    //console.log(dataToSend);
+        lastname: document.getElementById('lstnm').value,
+        password: document.getElementById('pass').value};
     $.ajax({
         type: "POST",
-        url: "/player/add",
+        url: "/adminpanel/player/add",
         data: dataToSend,
         success: function (data) {
             var tabela = document.getElementById('playerTable');
@@ -80,8 +76,11 @@ function addPlayer(){
             newRow.insertCell(0).innerHTML = dataToSend.uname;
             newRow.insertCell(1).innerHTML = dataToSend.firstname;
             newRow.insertCell(2).innerHTML = dataToSend.lastname;
-            newRow.insertCell(3).innerHTML = "<button type='button' class='btn' onclick='openEditModal("+lastRow+")'>Edit</button>";
-            newRow.insertCell(4).innerHTML = "<button type='button' class='btn' onclick='deleteRow("+lastRow+")'>Delete</button>";
+            newRow.insertCell(3).innerHTML = 0;
+            newRow.insertCell(4).innerHTML = 0;
+            newRow.insertCell(5).innerHTML = false;
+            newRow.insertCell(6).innerHTML = "<button type='button' class='btn' onclick='openEditModal("+lastRow+")'>Edit</button>";
+            newRow.insertCell(7).innerHTML = "<button type='button' class='btn' onclick='deleteRow("+lastRow+")'>Delete</button>";
         },
         error: function () {
             alert('Cannot insert data into table!');

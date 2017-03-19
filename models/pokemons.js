@@ -2,7 +2,6 @@
  * Created by Javelin on 16.3.2017.
  */
 
-
 var pool = require('../config-postgreSQL');
 var util = require('../helpers/util');
 

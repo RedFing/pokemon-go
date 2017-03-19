@@ -31,6 +31,8 @@
                         <input type="text" class="form-control" id="frstnm" name="frstnm">
                         <label for="lstnm">Last name:</label>
                         <input type="text" class="form-control" id="lstnm" name="lstnm">
+                        <label for="pass">Password:</label>
+                        <input type="password" class="form-control" id="pass" name="pass">
                     </div>
                     <div class="modal-footer">
                         <input type="button" value="Create" class="btn btn-default" data-dismiss="modal" onclick="addPlayer()"/>
@@ -65,6 +67,9 @@
             <th>Username</th>
             <th>First name</th>
             <th>Last name</th>
+            <th>Latitude</th>
+            <th>Longditude</th>
+            <th>Is online</th>
             <th>Edit</th>
             <th>Delete</th>
         </tr>
@@ -75,6 +80,9 @@
             <td><%= result[i].username %></td>
             <td><%= result[i].firstname %></td>
             <td><%= result[i].lastname %></td>
+            <td><%= result[i].lat %></td>
+            <td><%= result[i].lon %></td>
+            <td><%= result[i].isonline %></td>
             <td><button class="btn" type="button" onclick="openEditModal(<%= i %>)">Edit</button></td>
             <td><button class="btn" type="button" onclick="deleteRow(<%= i %>)">Delete</button></td>
         </tr>

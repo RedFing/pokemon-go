@@ -6,6 +6,11 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../config-postgreSQL');
 var binder = require('model-binder');
+var util = require('../helpers/util')
+
+router.get('/', function(req, res) {
+    res.render('adminPanel');
+});
 
 router.get('/player/', function(req, res) {
     pool.query('Select * from player', function(err, result) {
@@ -14,7 +19,7 @@ router.get('/player/', function(req, res) {
 });
 
 router.post('/player/add', function (req, res) {
-    pool.query('insert into player values ($1,$2,$3,$4)', [req.body.uname, req.body.firstname, req.body.lastname, "a"], function(err, result) {
+    pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [req.body.uname, req.body.firstname, req.body.lastname, util.hashPassword(req.body.password)], function(err, result) {
         if(err)
             res.sendStatus(400);
         else
@@ -33,11 +38,11 @@ router.delete('/player/delete', function (req,res) {
 
 router.post('/player/edit', function(req, res) {
     var {unameOld, unameNew, firstnameNew, lastnameNew} = req.body;
-    pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4", [unameNew, firstnameNew, lastnameNew, unameOld], function(err, result) {
+    pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [unameNew, firstnameNew, lastnameNew, unameOld], function(err, result) {
         if(err)
             res.sendStatus(500);
         else
-            res.sendStatus(200);
+            res.send(result.rows[0]);
     });
 });
 
@@ -48,7 +53,7 @@ router.get('/playerpokemon/', function(req, res) {
 });
 
 router.post('/playerpokemon/add', function(req, res) {
-    pool.query('Select id from pokemontype where name =$1',[req.body.pokename], function(err, result) {
+    pool.query('Select id from pokemontype where name=$1',[req.body.pokename], function(err, result) {
         if(err)
             res.sendStatus(400);
         else{
@@ -83,7 +88,7 @@ router.post('/playerpokemon/show', function(req, res) {
 });
 
 router.get('/pokemontype/', function(req, res) {
-    pool.query('Select * from pokemontype', function(err, result) {
+    pool.query('Select * from pokemontype order by id asc', function(err, result) {
         if(err) {
             res.sendStatus(400);
         }
@@ -94,7 +99,10 @@ router.get('/pokemontype/', function(req, res) {
 });
 
 router.post('/pokemontype/add', function(req, res) {
-    pool.query('insert into pokemontype values ($1,$2)', [req.body.pokeid, req.body.pokename], function(err, result) {
+    console.log(req.body);
+    pool.query('insert into pokemontype values ($1,$2,0,0,$3,$4,$5,$6,$7)',
+               [req.body.pokeid, req.body.pokename, req.body.pokerarity, req.body.pokecatchchance,
+                req.body.pokehp, req.body.pokeattack, req.body.pokedefense], function(err, result) {
         if(err)
             res.sendStatus(400);
         else
@@ -112,7 +120,9 @@ router.delete('/pokemontype/delete', function(req, res) {
 });
 
 router.post('/pokemontype/edit', function(req, res) {
-    pool.query("update pokemontype set id=$1, name=$2 where id=$3", [req.body.pokeidNew, req.body.pokenameNew ,req.body.pokeidOld], function(err, result) {
+    pool.query("update pokemontype set id=$1, name=$2, rarity=$3, catchchance=$4, hp=$5, attack=$6, defense=$7 where id=$8",
+        [req.body.pokeidNew, req.body.pokenameNew, req.body.pokerarityNew, req.body.pokecatchchanceNew,
+            req.body.pokehpNew, req.body.pokeattackNew, req.body.pokedefenseNew, req.body.pokeidOld], function(err, result) {
         if(err)
             res.sendStatus(400);
         else
