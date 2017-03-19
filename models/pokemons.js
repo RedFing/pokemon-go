@@ -23,30 +23,31 @@ function pokemons() {
     };
 
     this.catch = function (success, error) {
-        var chance = Math.random();
-        if (chance < 0.35) {
-            pool.query('delete from sentpokemons where id=$1', [this.id], function (err, result) {
-                success(false);
-            });
-        }
-        else {
-            pool.query('select pokemontypeid, expiretimestamp from sentpokemons where id=$1 and expiretimestamp > localtimestamp', [this.id], function (err, result1) {
-                if (result1.rows.length == 0) {
-                    error();
-                    return;
-                }
-                pool.query('insert into playerpokemon values($1,$2)', [$this.user, result1.rows[0].pokemontypeid], function (err, result2) { // napravi konekciju playera sa pokemonom
-                    pool.query('select name from pokemontype where id=$1', [result1.rows[0].pokemontypeid], function (err, result3) { //uzmi ime prema idu
+        pool.query('select * from sentpokemons where id=$1 and expiretimestamp > localtimestamp', [$this.id], function (err, result1) {
+            if (result1.rows.length == 0) {
+                error();
+                return;
+            }
+            var pokeid = result1.rows[0].pokemontypeid;
+            pool.query('select * from pokemontype where id=$1', [pokeid], function (err, result2) {
+                var chance = result2.rows[0].catchchance;
+                if (Math.random() >= chance){
+                    pool.query('insert into playerpokemon values($1,$2)', [$this.user, result2.rows[0].id], function (err, result3) { // napravi konekciju playera sa pokemonom
                         pool.query('delete from sentpokemons where id=$1', [$this.id]); //uhvacen i nema ga vise
                         success({
                             success: true,
-                            name: result3.rows[0].name,
+                            name: result2.rows[0].name,
                             pokemontypeid: result1.rows[0].pokemontypeid
                         });
                     });
-                });
+                }
+                else {
+                    pool.query('delete from sentpokemons where id=$1', [$this.id], function (err, result) {
+                        success(false);
+                    });
+                }
             });
-        }
+        });
     };
 
     this.getLocation = function (success, error) {
