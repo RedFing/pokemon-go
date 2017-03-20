@@ -23,6 +23,8 @@ $('document').ready(function(){
     });
 });
 
+
+var pokeMarkers = [];
 var map;
 function initMap() {
     var pozicijaIgraca;
@@ -66,18 +68,21 @@ function initMap() {
                 center: pos,
                 radius: 3000
             });
-                getPokemonLocation(pos, map);
-                getOtherPlayersLocation(map);
+            getPokemonLocation(pos,map)
+            setInterval(function(){getPokemonLocation(pos,map)}, 10000);
+            getOtherPlayersLocation(map);
         });
 }
 
 function getPokemonLocation(pos, map){
+    console.log('getPokemonLocation');
     var dataTosend = pos;
     $.ajax({
         type: "POST",
         url: "/playermap/getpokemonlocation",
         data: dataTosend,
         success: function(data){
+            console.log(data);
             id = data.id;
             lok = data.lok;
             var ikonica = {
@@ -87,13 +92,16 @@ function getPokemonLocation(pos, map){
             };
             marker = new google.maps.Marker({
                 position: lok,
+                id: data.id,
                 map: map,
                 icon: ikonica
             });
+            pokeMarkers.push(marker);
             marker.addListener('click', function() {
                 $('#catchPokemonModalHeading').text(data.name);
                 var ime = data.name.toLocaleLowerCase() + ".png";
                 $('.wrapper-img').html('<img src="../all-pokemons/'+ime+'" class="bigPicPokemon">');
+                $('#catchPokemonModalFooter').html('<button onclick="catchPokemon('+data.id+')">Catch</button>');
                 $('#catchPokemonModal').modal();
             });
         },
@@ -116,6 +124,7 @@ function getOtherPlayersLocation(map){
                     map: map,
                     zIndex: 10000,
                 });
+
                 marker.addListener('click', function() {
                     playerInfo(playerUsername);
                 });
@@ -126,8 +135,9 @@ function getOtherPlayersLocation(map){
     });
 }
 
-function catchPokemon() {
+function catchPokemon(id) {
     var dataTosend = {id: id};
+    console.log('data to send', id);
     $.ajax({
         type: "POST",
         url: "/playermap/catchpokemon",
@@ -154,12 +164,12 @@ function catchPokemon() {
                 alert("Pokemon has escaped!");
             }
             $("#catchPokemonModal").modal('hide');
-            marker.setMap(null);
+            removeMarker(pokeMarkers, id, map);
         },
         error: function () {
             alert("Pokemon is not here anymore!");
             $("#catchPokemonModal").modal('hide');
-            marker.setMap(null);
+            removeMarker(pokeMarkers, id, map);
         }
     });
 }
@@ -233,4 +243,13 @@ function declineChallenge(id){
     alert("You declined challenge with id: " + id);
     var row = document.getElementById("t-row-"+ id);
     row.parentElement.removeChild(row);
+}
+
+function removeMarker(pokeMarkers, markerId, map){
+    for (var i = 0; i < pokeMarkers.length; i++){
+        if (pokeMarkers[i].id == markerId){
+            pokeMarkers[i].setMap(null);
+            return;
+        }
+    }
 }
