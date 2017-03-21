@@ -49,7 +49,7 @@ router.post('/catchpokemon', binder(require('../models/pokemons.js')), function 
     pokemons.user = req.authUser;
     pokemons.catch(function (data) {
         res.send(data);
-    }, function (err) {
+    }, function () {
         res.sendStatus(400);
     });
 });
@@ -68,7 +68,8 @@ router.post('/givecustomname', binder(require('../models/pokemons.js')), functio
 
 router.post('/sendchallenge', binder(require('../models/challenge.js')), function (req,res){
    var challenge = req.requestModel;
-   challenge.sentby = req.authUser;
+   challenge.sender = req.authUser;
+   challenge.recipient = req.body.recipient;
    challenge.create(function (data) {
        res.sendStatus(200);
    }, function (err) {
@@ -78,12 +79,33 @@ router.post('/sendchallenge', binder(require('../models/challenge.js')), functio
 
 router.get('/getchallenge', function (req,res){
     var challenge = new (require('../models/challenge.js'))();
-    challenge.sentto = req.authUser;
+    challenge.recipient = req.authUser;
     challenge.getByRecipient(function (data) {
         res.send(data);
     }, function (err) {
         res.sendStatus(400);
     });
+});
+
+router.post('/respondtochallenge', binder(require('../models/challenge.js')), function (req,res){
+    var challenge = req.requestModel;
+    challenge.sender = req.authUser;
+    challenge.recipient = req.body.recipient;
+    challenge.response = req.body.response;
+    if (challenge.response == 'accept'){
+        challenge.acceptChallenge(function () {
+            res.sendStatus(200);
+        }, function () {
+            res.sendStatus(400);
+        });
+    }
+    else {
+        challenge.declineChallenge(function () {
+            res.sendStatus(200);
+        }, function () {
+            res.sendStatus(400);
+        });
+    }
 });
 
 router.get('/logout', function (req, res) {

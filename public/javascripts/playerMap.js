@@ -29,7 +29,7 @@ var map;
 function initMap() {
     var pozicijaIgraca;
     var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 18
+        zoom: 18,
     });
         navigator.geolocation.getCurrentPosition(function (position) {
             var pos = {
@@ -69,20 +69,18 @@ function initMap() {
                 radius: 3000
             });
             getPokemonLocation(pos,map)
-            setInterval(function(){getPokemonLocation(pos,map)}, 10000);
+            setInterval(function(){getPokemonLocation(pos,map)}, 60000);
             getOtherPlayersLocation(map);
         });
 }
 
 function getPokemonLocation(pos, map){
-    console.log('getPokemonLocation');
     var dataTosend = pos;
     $.ajax({
         type: "POST",
         url: "/playermap/getpokemonlocation",
         data: dataTosend,
         success: function(data){
-            console.log(data);
             id = data.id;
             lok = data.lok;
             var ikonica = {
@@ -101,6 +99,7 @@ function getPokemonLocation(pos, map){
                 $('#catchPokemonModalHeading').text(data.name);
                 var ime = data.name.toLocaleLowerCase() + ".png";
                 $('.wrapper-img').html('<img src="../all-pokemons/'+ime+'" class="bigPicPokemon">');
+                $('#pokemonInfo').html('<p>HP: '+data.hp+'</p><br /><p>Attack: '+data.attack+'</p><br /><p>Defense: '+data.defense+'</p>')
                 $('#catchPokemonModalFooter').html('<button onclick="catchPokemon('+data.id+')">Catch</button>');
                 $('#catchPokemonModal').modal();
             });
@@ -137,7 +136,6 @@ function getOtherPlayersLocation(map){
 
 function catchPokemon(id) {
     var dataTosend = {id: id};
-    console.log('data to send', id);
     $.ajax({
         type: "POST",
         url: "/playermap/catchpokemon",
@@ -166,8 +164,8 @@ function catchPokemon(id) {
             $("#catchPokemonModal").modal('hide');
             removeMarker(pokeMarkers, id, map);
         },
-        error: function () {
-            alert("Pokemon is not here anymore!");
+        error: function (data) {
+            alert('Pokemon is not here anymore');
             $("#catchPokemonModal").modal('hide');
             removeMarker(pokeMarkers, id, map);
         }
@@ -197,7 +195,7 @@ function sendChallenge(username){
     $.ajax({
         type: "POST",
         url: "/playermap/sendchallenge",
-        data: {sentto: username},
+        data: {recipient: username},
         success: function(data){
             $('#playerInfoModal').modal('hide');
         },
@@ -211,7 +209,6 @@ function getChallenges(){
         type: "GET",
         url: "/playermap/getchallenge",
         success: function(data){
-            console.log(data);
             var tbody = document.getElementById('tableChallengesBody');
             for (var i = 0; i < data.length; i++){
                 var tr = document.createElement('tr');
@@ -219,7 +216,7 @@ function getChallenges(){
                 var td1 = document.createElement('td');
                 var td2 = document.createElement('td');
                 var td3 = document.createElement('td');
-                td1.innerHTML = data[i].sentby;
+                td1.innerHTML = data[i].sender;
                 td2.innerHTML = "<button type='button' onclick='acceptChallenge("+data[i].id+")'>Accept</button>";
                 td3.innerHTML = "<button type='button' onclick='declineChallenge("+data[i].id+")'>Decline</button>";
                 tr.appendChild(td1);
@@ -234,15 +231,39 @@ function getChallenges(){
 }
 
 function acceptChallenge(id){
-    alert("You accepted challenge with id: " + id);
-    var row = document.getElementById("t-row-"+ id);
-    row.parentElement.removeChild(row);
+    $.ajax({
+        type: "POST",
+        url: '/playermap/respondtochallenge',
+        data: {id: id, response: 'accept'},
+        success(){
+            alert("Choose your pokemon for this challenge");
+            var row = document.getElementById("t-row-"+ id);
+            row.parentElement.removeChild(row);
+        },
+        error () {
+            alert("Challenge failed");
+            var row = document.getElementById("t-row-"+ id);
+            row.parentElement.removeChild(row);
+        }
+    });
 }
 
 function declineChallenge(id){
-    alert("You declined challenge with id: " + id);
-    var row = document.getElementById("t-row-"+ id);
-    row.parentElement.removeChild(row);
+    $.ajax({
+        type: "POST",
+        url: '/playermap/respondtochallenge',
+        data: {id: id, response: 'decline'},
+        success(){
+            alert("Challenge declined");
+            var row = document.getElementById("t-row-"+ id);
+            row.parentElement.removeChild(row);
+        },
+        error () {
+            alert("Challenge failed");
+            var row = document.getElementById("t-row-"+ id);
+            row.parentElement.removeChild(row);
+        }
+    });
 }
 
 function removeMarker(pokeMarkers, markerId, map){

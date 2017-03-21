@@ -32,7 +32,8 @@ function pokemons() {
             pool.query('select * from pokemontype where id=$1', [pokeid], function (err, result2) {
                 var chance = result2.rows[0].catchchance;
                 if (Math.random() >= chance){
-                    pool.query('insert into playerpokemon values($1,$2)', [$this.user, result2.rows[0].id], function (err, result3) { // napravi konekciju playera sa pokemonom
+                    pool.query('insert into playerpokemon values($1,$2) where not exists (select * from playerpokemon where username=$1 and pokemontypeid=$2)', [$this.user, result2.rows[0].id], function (err, result3) { // napravi konekciju playera sa pokemonom
+                        console.log(err);
                         pool.query('delete from sentpokemons where id=$1', [$this.id]); //uhvacen i nema ga vise
                         success({
                             success: true,
@@ -64,6 +65,9 @@ function pokemons() {
                     name: selectedPokemon.name,
                     x: selectedPokemon.x,
                     y: selectedPokemon.y,
+                    hp: selectedPokemon.hp,
+                    attack: selectedPokemon.attack,
+                    defense: selectedPokemon.defense,
                     lok: lok
                 });
             });
@@ -93,6 +97,7 @@ function generateChances(tableRows) {
     }
     return chances;
 }
+
 
 module.exports = pokemons;
 
