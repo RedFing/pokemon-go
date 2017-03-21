@@ -14,6 +14,62 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP DATABASE IF EXISTS postgres;
+--
+-- Name: postgres; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE postgres WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'Bosnian (Latin)_Bosnia and Herzegovina.1250' LC_CTYPE = 'Bosnian (Latin)_Bosnia and Herzegovina.1250';
+
+
+ALTER DATABASE postgres OWNER TO postgres;
+
+\connect postgres
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: postgres; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON DATABASE postgres IS 'default administrative connection database';
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
+
+
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -25,11 +81,12 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE challenges (
-    sentto character varying(30),
-    at timestamp without time zone,
-    sentby character varying(30),
     id integer NOT NULL,
-    delivered boolean DEFAULT false
+    sender character varying(30) NOT NULL,
+    recipient character varying(30) NOT NULL,
+    dateofcreation timestamp without time zone NOT NULL,
+    delivered boolean NOT NULL,
+    response character varying(30)
 );
 
 
@@ -160,23 +217,34 @@ ALTER TABLE ONLY sentpokemons ALTER COLUMN id SET DEFAULT nextval('sentpokemons_
 -- Data for Name: challenges; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO challenges (id, sender, recipient, dateofcreation, delivered, response) VALUES (21, 'javelin472@gmail.com', 'ognjen.bostjancic@outlook.com', '2017-03-21 12:21:05.170836', true, 'accept');
 
 
 --
 -- Name: challenges_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('challenges_id_seq', 19, true);
+SELECT pg_catalog.setval('challenges_id_seq', 21, true);
 
 
 --
 -- Data for Name: player; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO player (username, firstname, lastname, password, lat, lon, isonline) VALUES ('ognjen.bostjancic@outlook.com', 'Ognjen', 'Bostjancic', 'f6689b2444cb5bffeb6bd3b636f97755c10214f0894bfa490152700322369b1f', 43.8771652, 18.412934399999997, true);
-INSERT INTO player (username, firstname, lastname, password, lat, lon, isonline) VALUES ('javelin472@gmail.com', 'Ognjen', 'Bostjancic', 'f6689b2444cb5bffeb6bd3b636f97755c10214f0894bfa490152700322369b1f', 43.877969700000001, 18.4102152, true);
 INSERT INTO player (username, firstname, lastname, password, lat, lon, isonline) VALUES ('javelin33@hotmail.com', 'Ognjen', 'Bostjancic', 'f6689b2444cb5bffeb6bd3b636f97755c10214f0894bfa490152700322369b1f', 43.878006800000001, 18.4101918, false);
+INSERT INTO player (username, firstname, lastname, password, lat, lon, isonline) VALUES ('javelin472@gmail.com', 'Ognjen', 'Bostjancic', 'f6689b2444cb5bffeb6bd3b636f97755c10214f0894bfa490152700322369b1f', 43.854870099999999, 18.398841600000001, true);
+INSERT INTO player (username, firstname, lastname, password, lat, lon, isonline) VALUES ('ognjen.bostjancic@outlook.com', 'Ognjen', 'Bostjancic', 'f6689b2444cb5bffeb6bd3b636f97755c10214f0894bfa490152700322369b1f', 43.854852799999996, 18.3987999, true);
 
+
+--
+-- Data for Name: playerpokemon; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO playerpokemon (username, pokemontypeid, customname) VALUES ('ognjen.bostjancic@outlook.com', 11, '76');
+INSERT INTO playerpokemon (username, pokemontypeid, customname) VALUES ('ognjen.bostjancic@outlook.com', 20, 'a');
+INSERT INTO playerpokemon (username, pokemontypeid, customname) VALUES ('ognjen.bostjancic@outlook.com', 16, 'mjau');
+INSERT INTO playerpokemon (username, pokemontypeid, customname) VALUES ('ognjen.bostjancic@outlook.com', 13, 'sdf');
+INSERT INTO playerpokemon (username, pokemontypeid, customname) VALUES ('ognjen.bostjancic@outlook.com', 13, 'sdf');
 
 
 --
@@ -204,20 +272,19 @@ INSERT INTO pokemontype (id, name, x, y, rarity, catchchance, hp, attack, defens
 INSERT INTO pokemontype (id, name, x, y, rarity, catchchance, hp, attack, defense) VALUES (20, 'Abra', 6, 2, 3, 0.40000000000000002, 10, 1, 1);
 INSERT INTO pokemontype (id, name, x, y, rarity, catchchance, hp, attack, defense) VALUES (1, 'Pikachu', 24, 0, 2, 0.16, 20, 3, 2);
 
-
 --
 -- Name: sentpokemons_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('sentpokemons_id_seq', 700, true);
+SELECT pg_catalog.setval('sentpokemons_id_seq', 2196, true);
 
 
 --
--- Name: challenges challenges_id_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: challenges challenges_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY challenges
-    ADD CONSTRAINT challenges_id_pk PRIMARY KEY (id);
+    ADD CONSTRAINT challenges_pkey PRIMARY KEY (id);
 
 
 --
@@ -245,19 +312,19 @@ ALTER TABLE ONLY sentpokemons
 
 
 --
--- Name: challenges challenges_player_username_sentby_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: challenges challenges_recipient_player_username_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY challenges
-    ADD CONSTRAINT challenges_player_username_sentby_fk FOREIGN KEY (sentby) REFERENCES player(username);
+    ADD CONSTRAINT challenges_recipient_player_username_fk FOREIGN KEY (recipient) REFERENCES player(username);
 
 
 --
--- Name: challenges challenges_player_username_sentto_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: challenges challenges_sender_player_username_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY challenges
-    ADD CONSTRAINT challenges_player_username_sentto_fk FOREIGN KEY (sentto) REFERENCES player(username);
+    ADD CONSTRAINT challenges_sender_player_username_fk FOREIGN KEY (sender) REFERENCES player(username);
 
 
 --

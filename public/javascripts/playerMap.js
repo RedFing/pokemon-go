@@ -69,7 +69,7 @@ function initMap() {
                 radius: 3000
             });
             getPokemonLocation(pos,map)
-            setInterval(function(){getPokemonLocation(pos,map)}, 60000);
+            setInterval(function(){getPokemonLocation(pos,map)}, 2000);
             getOtherPlayersLocation(map);
         });
 }
