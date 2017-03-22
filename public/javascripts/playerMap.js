@@ -196,7 +196,6 @@ function sendChallenge(username){
         url: "/playermap/sendchallenge",
         data: {recipient: username},
         success: function(data){
-            console.log(data);
             $('#playerInfoModal').modal('hide');
             checkForAccept(data);
         },
@@ -207,7 +206,6 @@ function sendChallenge(username){
 
 function checkForAccept(challengeId){
     var intervalId = setInterval(function(){
-        console.log("checking for accept");
         $.ajax({
             type: "POST",
             url: "/playermap/checkforaccept",
@@ -221,7 +219,13 @@ function checkForAccept(challengeId){
                     }
                     $('#choosePokemonList').html(options);
                     $('#choosePokemonModal').modal();
-                    $('#choosePokemonModalFooter').html('<button type="button" onclick="selectPokemonForBattle('+challengeId+')">Fight</button>');
+                    var userType = "senderP"
+                    var footer = document.getElementById('choosePokemonModalFooter');
+                    var button = document.createElement('button');
+                    button.type = 'button';
+                    button.onclick = function(){selectPokemonForBattle(userType, data.id)};
+                    button.innerHTML = "Fight!";
+                    footer.appendChild(button);
                 }
             },
             error: function (data) {
@@ -231,7 +235,6 @@ function checkForAccept(challengeId){
 }
 
 function getChallenges(){
-    console.log("getting challenges");
     $.ajax({
         type: "GET",
         url: "/playermap/getchallenge",
@@ -263,14 +266,19 @@ function acceptChallenge(id){
         url: '/playermap/respondtochallenge',
         data: {id: id, response: 'accept'},
         success(data){
-            console.log(data);
             var options = "";
             for (var i = 0; i < data.length; i++){
                 options += '<option value="'+data[i].pokemontypeid+'">'+data[i].name+'</option>';
             }
             $('#choosePokemonList').html(options);
             $('#choosePokemonModal').modal();
-            $('#choosePokemonModalFooter').html('<button type="button" onclick="selectPokemonForBattle('+id+')">Fight</button>');
+            var userType = "recipientP";
+            var footer = document.getElementById('choosePokemonModalFooter');
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.onclick = function(){selectPokemonForBattle(userType, id)};
+            button.innerHTML = "Fight!";
+            footer.appendChild(button);
             var row = document.getElementById("t-row-"+ id);
             row.parentElement.removeChild(row);
         },
@@ -282,15 +290,15 @@ function acceptChallenge(id){
     });
 }
 
-function selectPokemonForBattle(challengeId){
+function selectPokemonForBattle(userType, id){
     var selectedPokemon = document.getElementById("choosePokemonList");
-    var selectedPokemonid = data[selectedPokemon.selectedIndex].pokemontypeid;
+    var selectedPokemonid = selectedPokemon.options[selectedPokemon.selectedIndex].value;
     $.ajax({
         type: "POST",
         url: "/playermap/selectpokemon",
-        data: {challengeid: challengeId , pokemonid: selectedPokemonid},
+        data: {usertype: userType, challengeid: id, pokemonid: selectedPokemonid},
         success: function(data){
-
+            $('#choosePokemonModal').modal('hide');
         },
         error: function (data) {
         }

@@ -94,7 +94,6 @@ router.post('/respondtochallenge', binder(require('../models/challenge.js')), fu
     challenge.response = req.body.response;
     if (challenge.response == 'accept'){
         challenge.acceptChallenge(function (data) {
-            console.log(data);
             res.send(data);
         }, function () {
             res.sendStatus(400);
@@ -114,12 +113,30 @@ router.post('/checkforaccept', binder(require('../models/challenge.js')), functi
     challenge.id = req.body.id;
     challenge.sender = req.authUser;
     challenge.checkForAccept(function(data){
-        console.log(data);
         res.send(data);
     },function(){
         res.sendStatus(400);
     });
 });
+
+router.post('/selectpokemon', binder(require('../models/challenge.js')), function (req,res){
+    var challenge = req.requestModel;
+    if (req.body.usertype == 'senderP'){
+        challenge.sender = req.authUser;
+        challenge.senderPokemontype = req.body.pokemonid;
+    }
+    else {
+        challenge.recipient = req.authUser;
+        challenge.recipientPokemontype = req.body.pokemonid;
+    }
+    challenge.id = req.body.challengeid;
+    challenge.selectFighters(function () {
+
+    }, function () {
+
+    });
+});
+
 
 router.get('/logout', function (req, res) {
     var users = new (require('../models/users.js'))();

@@ -34,7 +34,7 @@ app.use(authenticator({
     routes: ['/ok', '/login', '/register', '/player', '/pokemontype', '/playerpokemon', '/playerMap', '/playerMap/showtable',
              '/playerMap/getpokemonlocation', '/playerMap/catchpokemon', '/playerMap/givecustomname', '/playermap/logout',
              '/playermap/getotherplayerslocation', '/playermap/sendchallenge', '/playermap/getchallenge', '/playermap/checkforaccept',
-             '/playermap/respondtochallenge'],
+             '/playermap/respondtochallenge', '/playermap/selectpokemon'],
     encSecret: 'a password',
     hashSecret: 'abcdefg'
 }));

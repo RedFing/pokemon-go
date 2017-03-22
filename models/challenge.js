@@ -9,7 +9,7 @@ function challenge() {
     this.sender = this.recipient = this.response = "";
     this.dateofcreation = null;
     this.delivered = false;
-    this.id = 0;
+    this.id = this.senderPokemontype = this.recipientPokemontype = 0;
 
     this.create = function (success, error) {
         pool.query('insert into challenges (sender,recipient,dateofcreation,delivered,response)values($1,$2,localtimestamp, false, $3) returning id',
@@ -50,7 +50,6 @@ function challenge() {
                 if (result.rows[0].response == 'accept'){
                     pool.query('select name, pokemontypeid from pokemontype INNER JOIN playerpokemon on pokemontype.id = playerpokemon.pokemontypeid ' +
                         'where playerpokemon.username=$1', [$this.sender], function (err, result1) {
-                        console.log(result.rows1);
                         success({id: $this.id, response: result.rows[0].response, pokemons: result1.rows});
                     });
                 }
@@ -63,6 +62,19 @@ function challenge() {
             }
         });
     };
+    
+    this.selectFighters = function (success, error) {
+        if ($this.sender != ""){
+            pool.query('update challenges set senderpokemontype=$1 where id=$2', [$this.senderPokemontype, $this.id], function(err, result){
+
+            });
+        }
+        else {
+            pool.query('update challenges set recipientpokemontype=$1 where id=$2', [$this.recipientPokemontype, $this.id], function(err, result){
+
+            });
+        }
+    }
 }
 
 module.exports = challenge;
