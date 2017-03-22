@@ -14,7 +14,7 @@ $('document').ready(function(){
                 tr.appendChild(td2);
                 tbody.appendChild(tr);
             }
-            getChallenges();
+            setInterval(getChallenges, 10000);
             initMap();
         },
         error: function () {
@@ -22,7 +22,6 @@ $('document').ready(function(){
         }
     });
 });
-
 
 var pokeMarkers = [];
 var map;
@@ -69,7 +68,7 @@ function initMap() {
                 radius: 3000
             });
             getPokemonLocation(pos,map)
-            setInterval(function(){getPokemonLocation(pos,map)}, 2000);
+            setInterval(function(){getPokemonLocation(pos,map)}, 60000);
             getOtherPlayersLocation(map);
         });
 }
@@ -197,14 +196,42 @@ function sendChallenge(username){
         url: "/playermap/sendchallenge",
         data: {recipient: username},
         success: function(data){
+            console.log(data);
             $('#playerInfoModal').modal('hide');
+            checkForAccept(data);
         },
         error: function (data) {
         }
     });
 }
 
+function checkForAccept(challengeId){
+    var intervalId = setInterval(function(){
+        console.log("checking for accept");
+        $.ajax({
+            type: "POST",
+            url: "/playermap/checkforaccept",
+            data: challengeId,
+            success: function(data){
+                if (data.response == 'accept') {
+                    clearInterval(intervalId);
+                    var options = "";
+                    for (var i = 0; i < data.pokemons.length; i++){
+                        options += '<option value="'+data.pokemons[i].pokemontypeid+'">'+data.pokemons[i].name+'</option>';
+                    }
+                    $('#choosePokemonList').html(options);
+                    $('#choosePokemonModal').modal();
+                    $('#choosePokemonModalFooter').html('<button type="button" onclick="selectPokemonForBattle('+challengeId+')">Fight</button>');
+                }
+            },
+            error: function (data) {
+            }
+        });
+    }, 5000);
+}
+
 function getChallenges(){
+    console.log("getting challenges");
     $.ajax({
         type: "GET",
         url: "/playermap/getchallenge",
@@ -235,8 +262,15 @@ function acceptChallenge(id){
         type: "POST",
         url: '/playermap/respondtochallenge',
         data: {id: id, response: 'accept'},
-        success(){
-            alert("Choose your pokemon for this challenge");
+        success(data){
+            console.log(data);
+            var options = "";
+            for (var i = 0; i < data.length; i++){
+                options += '<option value="'+data[i].pokemontypeid+'">'+data[i].name+'</option>';
+            }
+            $('#choosePokemonList').html(options);
+            $('#choosePokemonModal').modal();
+            $('#choosePokemonModalFooter').html('<button type="button" onclick="selectPokemonForBattle('+id+')">Fight</button>');
             var row = document.getElementById("t-row-"+ id);
             row.parentElement.removeChild(row);
         },
@@ -244,6 +278,21 @@ function acceptChallenge(id){
             alert("Challenge failed");
             var row = document.getElementById("t-row-"+ id);
             row.parentElement.removeChild(row);
+        }
+    });
+}
+
+function selectPokemonForBattle(challengeId){
+    var selectedPokemon = document.getElementById("choosePokemonList");
+    var selectedPokemonid = data[selectedPokemon.selectedIndex].pokemontypeid;
+    $.ajax({
+        type: "POST",
+        url: "/playermap/selectpokemon",
+        data: {challengeid: challengeId , pokemonid: selectedPokemonid},
+        success: function(data){
+
+        },
+        error: function (data) {
         }
     });
 }

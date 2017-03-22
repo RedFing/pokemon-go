@@ -14,12 +14,11 @@ router.get('/', function(req, res) {
     res.render('adminPanel');
 });
 
-router.get('/player/', users.showUsers()/*function(req, res) {
-    pool.query('Select * from player', function(err, result) {
+router.get('/player/', function(req, res) {
+    pool.query('Select * from player', function (err, result) {
         res.render('player', {result: result.rows});
     });
-});*/
-);
+});
 router.post('/player/add', function (req, res) {
     users.createUser(req.body.uname, req.body.firstname, req.body.lastname, req.body.password, res);
 

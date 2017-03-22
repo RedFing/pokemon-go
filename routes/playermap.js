@@ -34,7 +34,7 @@ router.post('/getpokemonlocation', binder(require('../models/pokemons.js')), fun
 });
 
 router.get('/getotherplayerslocation', function (req,res){
-    var users =  new (require('../models/users.js'))();
+    var users = new (require('../models/users.js'))();
     users.user = req.authUser;
     users.getOtherUsersLocation(function (data) {
         res.send(data);
@@ -71,7 +71,7 @@ router.post('/sendchallenge', binder(require('../models/challenge.js')), functio
    challenge.sender = req.authUser;
    challenge.recipient = req.body.recipient;
    challenge.create(function (data) {
-       res.sendStatus(200);
+       res.send(data);
    }, function (err) {
        res.sendStatus(400);
    });
@@ -89,12 +89,13 @@ router.get('/getchallenge', function (req,res){
 
 router.post('/respondtochallenge', binder(require('../models/challenge.js')), function (req,res){
     var challenge = req.requestModel;
-    challenge.sender = req.authUser;
-    challenge.recipient = req.body.recipient;
+    challenge.id = req.body.id;
+    challenge.recipient = req.authUser;
     challenge.response = req.body.response;
     if (challenge.response == 'accept'){
-        challenge.acceptChallenge(function () {
-            res.sendStatus(200);
+        challenge.acceptChallenge(function (data) {
+            console.log(data);
+            res.send(data);
         }, function () {
             res.sendStatus(400);
         });
@@ -106,6 +107,18 @@ router.post('/respondtochallenge', binder(require('../models/challenge.js')), fu
             res.sendStatus(400);
         });
     }
+});
+
+router.post('/checkforaccept', binder(require('../models/challenge.js')), function (req,res){
+    var challenge = req.requestModel;
+    challenge.id = req.body.id;
+    challenge.sender = req.authUser;
+    challenge.checkForAccept(function(data){
+        console.log(data);
+        res.send(data);
+    },function(){
+        res.sendStatus(400);
+    });
 });
 
 router.get('/logout', function (req, res) {
