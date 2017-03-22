@@ -9,9 +9,11 @@ var util = require('../helpers/util');
 function users() {
     var $this = this;
     this.user = "";
+    this.username = this.firstname = this.lastname = this.pass = "";
 
     this.getOtherUsersLocation = function (success, error) {
         var response = [];
+        console.log("getting location");
         pool.query('Select * from player where isonline=true', function(err, result){
             var userLoc;
             for (var i = 0; i < result.rows.length; i++){
@@ -27,6 +29,7 @@ function users() {
                     }
                 }
             }
+            console.log("sending response");
             success(response);
         });
     };
@@ -41,47 +44,22 @@ function users() {
             }
         });
     };
-    this.createUser = function (uname, firstname, lastname, pass) {
-            pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [uname, fistname, lastname, util.hashPassword(pass)], function(err, result) {
-                if(err)
-                {
-                    console.log(err);
-                    res.sendStatus(400);
-                    //error();
-                }
-
-                else
-                {
-                    res.sendStatus(200);
-                    //success();
-                }
-
-            });
-
-
-
+    /*
+    this.createUser = function (success, error) {
+        pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [uname, firstname, lastname, util.hashPassword(pass)], function(err, result) {
+            if(err) {
+                console.log(err);
+                res.sendStatus(400);
+                //error();
+            }
+            else {
+                res.sendStatus(200);
+                //success();
+            }
+        });
     };
-}
 
-
-
-    var createUser = function(uname, firstname, lastname, pass, res) {
-    pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [uname, firstname, lastname, util.hashPassword(pass)], function(err, result) {
-        if(err)
-        {
-            console.log(err);
-            res.sendStatus(400);
-        }
-
-        else
-        {
-            res.sendStatus(200);
-        }
-
-    });
-
-};
-    var deleteUser = function (username, res) {
+    this.deleteUser = function (username, res) {
         pool.query("delete from player where username = $1" , [username], function(err, result) {
             if(err)
                 res.sendStatus(400);
@@ -89,7 +67,7 @@ function users() {
                 res.sendStatus(200);
         });
     };
-    var editUser = function (unameOld, unameNew, firstnameNew, lastnameNew, res) {
+    this.editUser = function (unameOld, unameNew, firstnameNew, lastnameNew, res) {
         pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [unameNew, firstnameNew, lastnameNew, unameOld], function(err, result) {
             if(err)
                 res.sendStatus(500);
@@ -98,17 +76,20 @@ function users() {
         });
 
     };
-    var showUsers = function () {
+    this.showUsers = function () {
         return function (req,res) {
             pool.query('Select * from player', function(err, result) {
                 res.render('player', {result: result.rows});
             });
-            
+
         };
-        
-    };
+
+    };*/
+}
 
 
 
-module.exports = {users, createUser, deleteUser, editUser, showUsers};
+
+
+module.exports = users;
 
