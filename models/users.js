@@ -41,7 +41,74 @@ function users() {
             }
         });
     };
+    this.createUser = function (uname, firstname, lastname, pass) {
+            pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [uname, fistname, lastname, util.hashPassword(pass)], function(err, result) {
+                if(err)
+                {
+                    console.log(err);
+                    res.sendStatus(400);
+                    //error();
+                }
+
+                else
+                {
+                    res.sendStatus(200);
+                    //success();
+                }
+
+            });
+
+
+
+    };
 }
 
-module.exports = users;
+
+
+    var createUser = function(uname, firstname, lastname, pass, res) {
+    pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [uname, firstname, lastname, util.hashPassword(pass)], function(err, result) {
+        if(err)
+        {
+            console.log(err);
+            res.sendStatus(400);
+        }
+
+        else
+        {
+            res.sendStatus(200);
+        }
+
+    });
+
+};
+    var deleteUser = function (username, res) {
+        pool.query("delete from player where username = $1" , [username], function(err, result) {
+            if(err)
+                res.sendStatus(400);
+            else
+                res.sendStatus(200);
+        });
+    };
+    var editUser = function (unameOld, unameNew, firstnameNew, lastnameNew, res) {
+        pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [unameNew, firstnameNew, lastnameNew, unameOld], function(err, result) {
+            if(err)
+                res.sendStatus(500);
+            else
+                res.send(result.rows[0]);
+        });
+
+    };
+    var showUsers = function () {
+        return function (req,res) {
+            pool.query('Select * from player', function(err, result) {
+                res.render('player', {result: result.rows});
+            });
+            
+        };
+        
+    };
+
+
+
+module.exports = {users, createUser, deleteUser, editUser, showUsers};
 
