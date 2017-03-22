@@ -8,6 +8,9 @@ var moment = require('moment');
 var pool = require('../config-postgreSQL');
 const crypto = require('crypto');
 
+var binder = require('model-binder');
+
+
 router.use('/adminpanel', adminpanel);
 router.use('/playermap', playermap);
 

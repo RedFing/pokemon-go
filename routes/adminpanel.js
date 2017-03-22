@@ -7,43 +7,50 @@ var router = express.Router();
 var pool = require('../config-postgreSQL');
 var binder = require('model-binder');
 var util = require('../helpers/util')
+var users = (require('../models/users'));
+
 
 router.get('/', function(req, res) {
     res.render('adminPanel');
 });
 
-router.get('/player/', function(req, res) {
+router.get('/player/', users.showUsers()/*function(req, res) {
     pool.query('Select * from player', function(err, result) {
         res.render('player', {result: result.rows});
     });
-});
-
+});*/
+);
 router.post('/player/add', function (req, res) {
+    users.createUser(req.body.uname, req.body.firstname, req.body.lastname, req.body.password, res);
+
+});/*function (req, res) {
     pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [req.body.uname, req.body.firstname, req.body.lastname, util.hashPassword(req.body.password)], function(err, result) {
         if(err)
             res.sendStatus(400);
         else
             res.sendStatus(200);
     });
-});
+});*/
 
 router.delete('/player/delete', function (req,res) {
-    pool.query("delete from player where username = $1" , [req.body.uname], function(err, result) {
+    users.deleteUser(req.body.uname,res);
+    /*pool.query("delete from player where username = $1" , [req.body.uname], function(err, result) {
         if(err)
             res.sendStatus(400);
         else
             res.sendStatus(200);
-    });
+    });*/
 });
 
 router.post('/player/edit', function(req, res) {
-    var {unameOld, unameNew, firstnameNew, lastnameNew} = req.body;
-    pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [unameNew, firstnameNew, lastnameNew, unameOld], function(err, result) {
+    //var {unameOld, unameNew, firstnameNew, lastnameNew} = req.body;
+    users.editUser(req.body.unameOld, req.body.unameNew, req.body.firstnameNew, req.body.lastnameNew,res);
+    /*pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [unameNew, firstnameNew, lastnameNew, unameOld], function(err, result) {
         if(err)
             res.sendStatus(500);
         else
             res.send(result.rows[0]);
-    });
+    });*/
 });
 
 router.get('/playerpokemon/', function(req, res) {

@@ -4,7 +4,7 @@
 var Pool = require('pg').Pool;
 var pool = new Pool({
     user: 'postgres',
-    password: 'root',
+    password: '0000',
     host: 'localhost',
     database: 'postgres',
     max: 10, // max number of clients in pool
