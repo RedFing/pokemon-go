@@ -14,13 +14,29 @@ router.get('/', function(req, res) {
     res.render('adminPanel');
 });
 
-router.get('/player/', function(req, res) {
-    pool.query('Select * from player', function (err, result) {
-        res.render('player', {result: result.rows});
+router.get('/player/',binder(require('../models/users')), function(req, res) {
+    var user = req.requestModel;
+    user.showUsers(function (success) {
+        res.render('player', {result: success});
+    }, function (error) {
+        res.send(error);
     });
+    /*pool.query('Select * from player', function (err, result) {
+        res.render('player', {result: result.rows});
+    });*/
 });
-router.post('/player/add', function (req, res) {
-    users.createUser(req.body.uname, req.body.firstname, req.body.lastname, req.body.password, res);
+router.post('/player/add', binder(require('../models/users')), function (req, res) {
+    var user = req.requestModel;
+    user.username = req.body.uname;
+    user.firstname = req.body.firstname;
+    user.lastname = req.body.lastname;
+    user.pass = req.body.password;
+    user.createUser(function (success) {
+        res.sendStatus(success);
+
+    }, function (error) {
+        res.sendStatus(error);
+    });
 
 });/*function (req, res) {
     pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [req.body.uname, req.body.firstname, req.body.lastname, util.hashPassword(req.body.password)], function(err, result) {
@@ -31,8 +47,14 @@ router.post('/player/add', function (req, res) {
     });
 });*/
 
-router.delete('/player/delete', function (req,res) {
-    users.deleteUser(req.body.uname,res);
+router.delete('/player/delete',binder(require('../models/users')), function (req,res) {
+    var user = req.requestModel;
+    user.username = req.body.uname;
+    user.deleteUser(function (success) {
+        res.sendStatus(success);
+    }, function (error) {
+        res.sendStatus(error);
+    });
     /*pool.query("delete from player where username = $1" , [req.body.uname], function(err, result) {
         if(err)
             res.sendStatus(400);
@@ -41,9 +63,18 @@ router.delete('/player/delete', function (req,res) {
     });*/
 });
 
-router.post('/player/edit', function(req, res) {
+router.post('/player/edit', binder(require('../models/users')), function(req, res) {
     //var {unameOld, unameNew, firstnameNew, lastnameNew} = req.body;
-    users.editUser(req.body.unameOld, req.body.unameNew, req.body.firstnameNew, req.body.lastnameNew,res);
+    var user = req.requestModel;
+    user.oldUsername = req.body.unameOld;
+    user.username = req.body.unameNew;
+    user.firstname = req.body.firstnameNew;
+    user.lastname = req.body.lastnameNew;
+    user.editUser(function (success) {
+        res.send(success);
+    }, function (error) {
+        res.sendStatus(error);
+    });
     /*pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [unameNew, firstnameNew, lastnameNew, unameOld], function(err, result) {
         if(err)
             res.sendStatus(500);

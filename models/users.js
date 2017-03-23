@@ -10,7 +10,7 @@ function users() {
     var $this = this;
     this.user = "";
     this.username = this.firstname = this.lastname = this.pass = "";
-
+    this.oldUsername = "";
     this.getOtherUsersLocation = function (success, error) {
         var response = [];
         console.log("getting location");
@@ -44,52 +44,51 @@ function users() {
             }
         });
     };
-    /*
+
     this.createUser = function (success, error) {
-        pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [uname, firstname, lastname, util.hashPassword(pass)], function(err, result) {
+        pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [$this.username, $this.firstname, $this.lastname, util.hashPassword($this.pass)], function(err, result) {
             if(err) {
                 console.log(err);
-                res.sendStatus(400);
-                //error();
+                //res.sendStatus(400);
+                error(400);
             }
             else {
-                res.sendStatus(200);
-                //success();
+                //res.sendStatus(200);
+                success(200);
             }
         });
     };
 
-    this.deleteUser = function (username, res) {
-        pool.query("delete from player where username = $1" , [username], function(err, result) {
+    this.deleteUser = function (success, error) {
+        pool.query("delete from player where username = $1" , [$this.username], function(err, result) {
             if(err)
-                res.sendStatus(400);
+                error(400);
             else
-                res.sendStatus(200);
+                success(200);
         });
     };
-    this.editUser = function (unameOld, unameNew, firstnameNew, lastnameNew, res) {
-        pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [unameNew, firstnameNew, lastnameNew, unameOld], function(err, result) {
+    this.editUser = function (success, error) {
+        pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [$this.username, $this.firstname,
+            $this.lastname, $this.oldUsername], function(err, result) {
             if(err)
-                res.sendStatus(500);
+                error(500);
             else
-                res.send(result.rows[0]);
+                success(result.rows[0]);
         });
 
     };
-    this.showUsers = function () {
-        return function (req,res) {
-            pool.query('Select * from player', function(err, result) {
-                res.render('player', {result: result.rows});
-            });
+    this.showUsers = function (success, error) {
+        pool.query('Select * from player', function(err, result) {
+            if(err)
+                error(err);
+            else
+                success(result.rows);
+        });
 
-        };
+    };
 
-    };*/
+
 }
-
-
-
-
 
 module.exports = users;
 
