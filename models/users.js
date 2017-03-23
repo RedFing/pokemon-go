@@ -11,6 +11,7 @@ function users() {
     this.user = "";
     this.username = this.firstname = this.lastname = this.pass = "";
     this.oldUsername = "";
+
     this.getOtherUsersLocation = function (success, error) {
         var response = [];
         console.log("getting location");
@@ -71,7 +72,7 @@ function users() {
         pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [$this.username, $this.firstname,
             $this.lastname, $this.oldUsername], function(err, result) {
             if(err)
-                error(500);
+                error(400);
             else
                 success(result.rows[0]);
         });

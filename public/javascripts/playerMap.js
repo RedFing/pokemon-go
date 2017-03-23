@@ -26,51 +26,56 @@ $('document').ready(function(){
 var pokeMarkers = [];
 var map;
 function initMap() {
-    var pozicijaIgraca;
-    var map = new google.maps.Map(document.getElementById('map'), {
+    console.log('initMap begin');
+    var userPosition;
+    var latlng = new google.maps.LatLng(-34.397, 150.644);
+    map = new google.maps.Map(document.getElementById('map'), {
         zoom: 18,
+        center: latlng
     });
-        navigator.geolocation.getCurrentPosition(function (position) {
-            var pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            pozicijaIgraca = pos;
-            map.setCenter(pos);
-            var ikonica = {
-                url: "../you-marker.png",
-                size: new google.maps.Size(48,48),
-                origin: new google.maps.Point(0,0)
-            };
-            new google.maps.Marker({
-                position: pos,
-                map: map,
-                icon: ikonica
-            });
-            new google.maps.Circle({
-                strokeColor: '#0000FF',
-                strokeOpacity: 0.2,
-                strokeWeight: 2,
-                fillColor: '#0000FF',
-                fillOpacity: 0.1,
-                map: map,
-                center: pos,
-                radius: 100
-            });
-            new google.maps.Circle({
-                strokeColor: '#00FF00',
-                strokeOpacity: 0.2,
-                strokeWeight: 2,
-                fillColor: '#00FF00',
-                fillOpacity: 0.05,
-                map: map,
-                center: pos,
-                radius: 3000
-            });
-            getPokemonLocation(pos,map)
-            setInterval(function(){getPokemonLocation(pos,map)}, 60000);
-            getOtherPlayersLocation(map);
+    navigator.geolocation.getCurrentPosition(function (position) {
+        var pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
+        userPosition = pos;
+        console.log(pos);
+        map.setCenter(pos);
+        var ikonica = {
+            url: "../you-marker.png",
+            size: new google.maps.Size(48,48),
+            origin: new google.maps.Point(0,0)
+        };
+        new google.maps.Marker({
+            position: pos,
+            map: map,
+            icon: ikonica
         });
+        new google.maps.Circle({
+            strokeColor: '#0000FF',
+            strokeOpacity: 0.2,
+            strokeWeight: 2,
+            fillColor: '#0000FF',
+            fillOpacity: 0.1,
+            map: map,
+            center: pos,
+            radius: 100
+        });
+        new google.maps.Circle({
+            strokeColor: '#00FF00',
+            strokeOpacity: 0.2,
+            strokeWeight: 2,
+            fillColor: '#00FF00',
+            fillOpacity: 0.05,
+            map: map,
+            center: pos,
+            radius: 3000
+        });
+        getPokemonLocation(pos,map);
+        setInterval(function(){getPokemonLocation(pos,map)}, 60000);
+        getOtherPlayersLocation(map);
+    });
+    console.log('initMap end');
 }
 
 function getPokemonLocation(pos, map){
@@ -82,7 +87,7 @@ function getPokemonLocation(pos, map){
         success: function(data){
             id = data.id;
             lok = data.lok;
-            var ikonica = {
+            var pokeicon = {
                 url: "../pokemoni.png",
                 size: new google.maps.Size(80,80),
                 origin: new google.maps.Point(data.x * 80, data.y * 80)
@@ -91,7 +96,7 @@ function getPokemonLocation(pos, map){
                 position: lok,
                 id: data.id,
                 map: map,
-                icon: ikonica
+                icon: pokeicon
             });
             pokeMarkers.push(marker);
             marker.addListener('click', function() {

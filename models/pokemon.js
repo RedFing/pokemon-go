@@ -22,7 +22,7 @@ function pokemons() {
         });
     };
 
-    this.catch = function (success, error) {
+    this.catch = function (success, error) { // and pokemonid is match
         pool.query('select * from sentpokemons where id=$1 and expiretimestamp > localtimestamp', [$this.id], function (err, result1) {
             if (result1.rows.length == 0) {
                 error();
@@ -32,7 +32,7 @@ function pokemons() {
             pool.query('select * from pokemontype where id=$1', [pokeid], function (err, result2) {
                 var chance = result2.rows[0].catchchance;
                 if (Math.random() >= chance){
-                    console.log($this.user, result2.rows[0].id);
+                    //console.log($this.user, result2.rows[0].id);
                     pool.query('insert into playerpokemon values($1,$2)', [$this.user, result2.rows[0].id], function (err, result3) { // napravi konekciju playera sa pokemonom
                         console.log(err);
                         pool.query('delete from sentpokemons where id=$1', [$this.id]); //uhvacen i nema ga vise
@@ -52,7 +52,7 @@ function pokemons() {
         });
     };
 
-    this.getLocation = function (success, error) {
+    this.getLocation = function (success, error) { //1. query izbaciti
         pool.query('update player set lat=$1, lon=$2 where username=$3', [$this.userLat, $this.userLng, $this.user]); // update player location
         pool.query('select * from pokemontype order by id asc', function (err, result) {
             var chances = generateChances(result.rows); // generate chances array
