@@ -71,7 +71,7 @@ function initMap() {
             radius: 3000
         });
         getPokemonLocation(pos,map);
-        setInterval(function(){getPokemonLocation(pos,map)}, 6000);
+        setInterval(function(){getPokemonLocation(pos,map)}, 60000);
         getOtherPlayersLocation(map);
     });
 }
@@ -84,24 +84,23 @@ function getPokemonLocation(pos, map){
         data: dataTosend,
         success: function(data){
             id = data.sentpokemonsid;
-            var location = data.pokelocation;
             var pokeicon = {
                 url: "../pokemoni.png",
                 size: new google.maps.Size(80,80),
-                origin: new google.maps.Point(data.x * 80, data.y * 80)
+                origin: new google.maps.Point(data.pokemon.x * 80, data.pokemon.y * 80)
             };
             marker = new google.maps.Marker({
-                position: location,
+                position: {lat: data.pokemon.lat, lng: data.pokemon.lng},
                 id: data.sentpokemonsid,
                 map: map,
                 icon: pokeicon
             });
             pokeMarkers.push(marker);
             marker.addListener('click', function() {
-                $('#catchPokemonModalHeading').text(data.name);
-                var ime = data.name.toLocaleLowerCase() + ".png";
+                $('#catchPokemonModalHeading').text(data.pokemon.name);
+                var ime = data.pokemon.name.toLocaleLowerCase() + ".png";
                 $('.wrapper-img').html('<img src="../all-pokemons/'+ime+'" class="bigPicPokemon">');
-                $('#pokemonInfo').html('<p>HP: '+data.hp+'</p><br /><p>Attack: '+data.attack+'</p><br /><p>Defense: '+data.defense+'</p>')
+                $('#pokemonInfo').html('<p>HP: '+data.pokemon.hp+'</p><br /><p>Attack: '+data.pokemon.attack+'</p><br /><p>Defense: '+data.pokemon.defense+'</p>')
                 $('#catchPokemonModalFooter').html('<button onclick="catchPokemon('+data.sentpokemonsid+')">Catch</button>');
                 $('#catchPokemonModal').modal();
             });

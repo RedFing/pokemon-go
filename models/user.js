@@ -14,7 +14,6 @@ function user() {
     this.lat = this.lon = "";
     this.getOtherUsersLocation = function (success, error) {
         var response = [];
-        console.log("getting location");
         pool.query('Select * from player where isonline=true', function(err, result){
             var userLoc;
             for (var i = 0; i < result.rows.length; i++){
@@ -30,7 +29,6 @@ function user() {
                     }
                 }
             }
-            console.log("sending response");
             success(response);
         });
     };
