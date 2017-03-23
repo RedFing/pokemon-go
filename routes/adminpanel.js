@@ -7,14 +7,16 @@ var router = express.Router();
 var pool = require('../config-postgreSQL');
 var binder = require('model-binder');
 var util = require('../helpers/util')
-var users = (require('../models/users'));
+var users = (require('../models/user'));
 
-
+//TODO cookie->session
+//TODO ejs ->react, interceptor, authorize
+//TODO dodato chat izmedju dvojice boraca
 router.get('/', function(req, res) {
     res.render('adminPanel');
 });
 
-router.get('/player/',binder(require('../models/users')), function(req, res) {
+router.get('/player/',binder(require('../models/user')), function(req, res) {
     var user = req.requestModel;
     user.showUsers(function (success) {
         res.render('player', {result: success});
@@ -25,7 +27,7 @@ router.get('/player/',binder(require('../models/users')), function(req, res) {
         res.render('player', {result: result.rows});
     });*/
 });
-router.post('/player/add', binder(require('../models/users')), function (req, res) {
+router.post('/player/add', binder(require('../models/user')), function (req, res) {
     var user = req.requestModel;
     user.username = req.body.uname;
     user.firstname = req.body.firstname;
@@ -33,9 +35,10 @@ router.post('/player/add', binder(require('../models/users')), function (req, re
     user.pass = req.body.password;
     user.createUser(function (success) {
         res.sendStatus(success);
-
+        //res.send(success.databaseError);
+        //console.log(success.httpError + success.databaseError);
     }, function (error) {
-        res.sendStatus(error);
+        res.sendStatus(error.httpError);
     });
 
 });/*function (req, res) {
@@ -47,7 +50,7 @@ router.post('/player/add', binder(require('../models/users')), function (req, re
     });
 });*/
 
-router.delete('/player/delete',binder(require('../models/users')), function (req,res) {
+router.delete('/player/delete',binder(require('../models/user')), function (req, res) {
     var user = req.requestModel;
     user.username = req.body.uname;
     user.deleteUser(function (success) {
@@ -63,7 +66,7 @@ router.delete('/player/delete',binder(require('../models/users')), function (req
     });*/
 });
 
-router.post('/player/edit', binder(require('../models/users')), function(req, res) {
+router.post('/player/edit', binder(require('../models/user')), function(req, res) {
     //var {unameOld, unameNew, firstnameNew, lastnameNew} = req.body;
     var user = req.requestModel;
     user.oldUsername = req.body.unameOld;

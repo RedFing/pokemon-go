@@ -5,13 +5,13 @@
 
 var pool = require('../config-postgreSQL');
 var util = require('../helpers/util');
-
+//TODO promijeniti users -> user
 function users() {
     var $this = this;
     this.user = "";
     this.username = this.firstname = this.lastname = this.pass = "";
     this.oldUsername = "";
-    this.getOtherUsersLocation = function (success, error) {
+    this.getOtherUsersLocation = function (success, error) {//TODO uzimati manje korisnika iz baze
         var response = [];
         console.log("getting location");
         pool.query('Select * from player where isonline=true', function(err, result){
@@ -48,7 +48,7 @@ function users() {
     this.createUser = function (success, error) {
         pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [$this.username, $this.firstname, $this.lastname, util.hashPassword($this.pass)], function(err, result) {
             if(err) {
-                console.log(err);
+                console.log(err);//TODO vratiti error sa baze
                 //res.sendStatus(400);
                 error(400);
             }
