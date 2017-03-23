@@ -7,7 +7,10 @@ var router = express.Router();
 var pool = require('../config-postgreSQL');
 var binder = require('model-binder');
 
-
+//TODO cookie->session
+//TODO ejs ->react, interceptor, authorize
+//TODO dodato chat izmedju dvojice boraca
+//TODO socketIO, multer
 router.get('/', function(req, res) {
     res.render('adminPanel');
 });

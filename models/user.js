@@ -11,7 +11,7 @@ function user() {
     this.user = "";
     this.username = this.firstname = this.lastname = this.pass = "";
     this.oldUsername = "";
-
+    this.lat = this.lon = "";
     this.getOtherUsersLocation = function (success, error) {
         var response = [];
         console.log("getting location");
@@ -46,7 +46,7 @@ function user() {
         });
     };
 
-    this.createUser = function (success, error) {
+    this.createUser = function (success, error) {//TODO vratiti error sa baze
         pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [$this.username, $this.firstname, $this.lastname, util.hashPassword($this.pass)], function(err, result) {
             if(err) {
                 console.log(err);
@@ -85,6 +85,19 @@ function user() {
             else
                 success(result.rows);
         });
+
+    };
+    this.updateLocation = function (success, error) {
+        pool.query('update player set lat = $1, lon = $2 where username=$3', [$this.lat, $this.lon, $this.username], function (err, result) {
+            if(err)
+            {
+                console.log(err);
+                error(err);
+            }
+            else
+                success(200);
+
+        })
 
     };
 
