@@ -11,6 +11,18 @@ router.get('/', function (req,res){
     res.render('playerMap');
 });
 
+router.post('/updateuserlocation', function (req,res){
+    var user = new (require('../models/user.js'))();
+    user.lat = req.body.lat;
+    user.lon = req.body.lng;
+    user.username = req.authUser;
+    user.updateLocation(function () {
+        res.sendStatus(200);
+    }, function () {
+        res.sendStatus(400);
+    })
+});
+
 router.get('/showtable', function (req,res){
     var pokemon = new (require('../models/pokemon.js'))();
     pokemon.user = req.authUser;

@@ -87,8 +87,7 @@ function user() {
     };
     this.updateLocation = function (success, error) {
         pool.query('update player set lat = $1, lon = $2 where username=$3', [$this.lat, $this.lon, $this.username], function (err, result) {
-            if(err)
-            {
+            if(err) {
                 console.log(err);
                 error(err);
             }

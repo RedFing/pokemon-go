@@ -14,12 +14,13 @@ function challenge() {
     this.create = function (success, error) {
         pool.query('insert into challenges (sender,recipient,dateofcreation,delivered,response)values($1,$2,localtimestamp, false, $3) returning id',
             [$this.sender, $this.recipient, 'none'], function(err, result){
-                if (err) {
-                    error(err);
-                    return;
-                }
+            if (err) {
+                error(err);
+            }
+            else {
                 success(result.rows[0]);
-            });
+            }
+        });
     };
 
     this.getByRecipient = function (success, error) {
@@ -27,40 +28,41 @@ function challenge() {
             [$this.recipient], function(err, result){
                 if (err) {
                     error(err);
-                    return;
                 }
-                success(result.rows);
+                else {
+                    success(result.rows);
+                }
             });
     };
 
     this.accept = function (success, error) {
-        pool.query('update challenges set response=$1 where id=$2',
-            ['accept', $this.id], function(err, result){
-                if (err) {
-                    error(err);
-                    return;
-                }
+        pool.query('update challenges set response=$1 where id=$2', ['accept', $this.id], function(err, result){
+            if (err) {
+                error(err);
+            }
+            else {
                 pool.query('select name, pokemontypeid from pokemontype INNER JOIN playerpokemon on pokemontype.id = playerpokemon.pokemontypeid ' +
                     'where playerpokemon.username=$1', [$this.recipient], function (err, result) {
                     if (err) {
                         error(err);
-                        return;
                     }
-                    success(result.rows);
+                    else {
+                        success(result.rows);
+                    }
                 });
-
-            });
+            }
+        });
     };
 
     this.decline = function (success, error) {
-        pool.query('update challenges set response=$1 where id=$2',
-            ["decline", $this.id], function(err, result){
-                if (err) {
-                    error(err);
-                    return;
-                }
+        pool.query('update challenges set response=$1 where id=$2', ["decline", $this.id], function(err, result){
+            if (err) {
+                error(err);
+            }
+            else {
                 success();
-            });
+            }
+        });
     };
 
     this.checkForAccept = function (success, error) {

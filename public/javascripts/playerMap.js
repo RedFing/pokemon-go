@@ -70,9 +70,23 @@ function initMap() {
             center: pos,
             radius: 3000
         });
+        updateUserLocation(pos);
         getPokemonLocation(pos,map);
         setInterval(function(){getPokemonLocation(pos,map)}, 60000);
         getOtherPlayersLocation(map);
+    });
+}
+
+function updateUserLocation(pos){
+    console.log("saljem: ", pos);
+    $.ajax({
+        type: "POST",
+        url: "/playermap/updateuserlocation",
+        data: pos,
+        success: function(){
+        },
+        error: function () {
+        }
     });
 }
 
