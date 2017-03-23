@@ -5,16 +5,16 @@
 var pool = require('../config-postgreSQL');
 var util = require('../helpers/util');
 
-function pokemons() {
+function pokemon() {
     var $this = this;
     this.user = this.name = this.customName = "";
-    this.id = this.x = this.y = this.userLat = this.userLng = this.pokemontypeid = 0;
+    this.id = this.x = this.y = this.pokemontypeid = 0;
 
-    this.showUserPokemons = function (success, error){
+    this.getByUser = function (success, error){
         pool.query('select pokemontype.name, playerpokemon.customname from pokemontype INNER JOIN ' +
             'playerpokemon on pokemontype.id = playerpokemon.pokemontypeid where username=$1', [$this.user], function(err, result) {
             if (err){
-                error();
+                error(err);
             }
             else {
                 success(result.rows);
@@ -22,55 +22,57 @@ function pokemons() {
         });
     };
 
-    this.catch = function (success, error) { // and pokemonid is match
-        pool.query('select * from sentpokemons where id=$1 and expiretimestamp > localtimestamp', [$this.id], function (err, result1) {
-            if (result1.rows.length == 0) {
-                error();
-                return;
+    this.catch = function (success, error) {
+        //check if requested pokemon is still "valid", then get his catchchance and pokemontypeid
+        pool.query('select * from pokemontype where id=(select pokemontypeid from sentpokemons where id=$1 and expiretimestamp > localtimestamp)', [$this.id], function (err, result) {
+            if (err) {
+                error(err);
             }
-            var pokeid = result1.rows[0].pokemontypeid;
-            pool.query('select * from pokemontype where id=$1', [pokeid], function (err, result2) {
-                var chance = result2.rows[0].catchchance;
-                if (Math.random() >= chance){
-                    //console.log($this.user, result2.rows[0].id);
-                    pool.query('insert into playerpokemon values($1,$2)', [$this.user, result2.rows[0].id], function (err, result3) { // napravi konekciju playera sa pokemonom
-                        console.log(err);
-                        pool.query('delete from sentpokemons where id=$1', [$this.id]); //uhvacen i nema ga vise
-                        success({
-                            success: true,
-                            name: result2.rows[0].name,
-                            pokemontypeid: result1.rows[0].pokemontypeid
-                        });
+            else {
+                //try to catch pokemon
+                if (Math.random() >= result.rows[0].catchchance) {
+                    //caught
+                    pool.query('insert into playerpokemon values($1,$2)', [$this.user, result.rows[0].id], function (err) {
+                        if (err){
+                            error(err);
+                        }
+                        else {
+                            success({
+                                caught: true,
+                                name: result.rows[0].name,
+                                pokemontypeid: result.rows[0].pokemontypeid
+                            });
+                        }
                     });
                 }
+                //not caught
                 else {
-                    pool.query('delete from sentpokemons where id=$1', [$this.id], function (err, result) {
-                        success(false);
-                    });
+                    success({caught: false});
                 }
-            });
+            }
         });
     };
 
-    this.getLocation = function (success, error) { //1. query izbaciti
-        pool.query('update player set lat=$1, lon=$2 where username=$3', [$this.userLat, $this.userLng, $this.user]); // update player location
+    this.spawn = function (userLocation, success, error) {
         pool.query('select * from pokemontype order by id asc', function (err, result) {
-            var chances = generateChances(result.rows); // generate chances array
-            var randomId = chances[Math.floor(Math.random() * chances.length)]; // select random array element
-            var selectedPokemon = result.rows[randomId - 1]; // select pokemon with random id
-            var lok = util.randomLocationInRadius100m({lat: $this.userLat, lng: $this.userLng}); // generate random spawn location
+            var generatedPokemon = util.generatePokemon(userLocation, result.rows);
             pool.query("insert into sentpokemons (pokemontypeid, lat, lon, expired, expiretimestamp) " +
-                "values($1, $2, $3, $4, CURRENT_TIMESTAMP + interval '10 minutes') returning id", [randomId, lok.lat, lok.lng, false], function (err, result2) {
-                success({
-                    id: result2.rows[0].id,
-                    name: selectedPokemon.name,
-                    x: selectedPokemon.x,
-                    y: selectedPokemon.y,
-                    hp: selectedPokemon.hp,
-                    attack: selectedPokemon.attack,
-                    defense: selectedPokemon.defense,
-                    lok: lok
-                });
+                "values($1, $2, $3, $4, CURRENT_TIMESTAMP + interval '10 minutes') returning id", [generatedPokemon.id, generatedPokemon.lat, generatedPokemon.lng, false], function (err, result2) {
+                if (err) {
+                    error(err);
+                }
+                else {
+                    success({
+                        sentpokemonsid: result2.rows[0].id,
+                        name: generatedPokemon.name,
+                        x: generatedPokemon.x,
+                        y: generatedPokemon.y,
+                        hp: generatedPokemon.hp,
+                        attack: generatedPokemon.attack,
+                        defense: generatedPokemon.defense,
+                        pokelocation: {lat: generatedPokemon.lat, lng: generatedPokemon.lng}
+                    });
+                }
             });
         });
     };
@@ -79,7 +81,7 @@ function pokemons() {
         pool.query('update playerpokemon set customname=$1 where username=$2 and pokemontypeid=$3',
             [$this.customName, $this.user, $this.pokemontypeid], function(err, result){
             if (err){
-                error();
+                error(err);
             }
             else {
                 success();
@@ -88,17 +90,6 @@ function pokemons() {
     }
 }
 
-function generateChances(tableRows) {
-    var chances = [];
-    for (var i = 0; i < tableRows.length; i++){
-        var rarity = tableRows[i].rarity;
-        for (var j = 0; j < rarity; j++){
-            chances.push(tableRows[i].id);
-        }
-    }
-    return chances;
-}
 
-
-module.exports = pokemons;
+module.exports = pokemon;
 

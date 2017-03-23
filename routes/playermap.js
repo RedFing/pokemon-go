@@ -14,22 +14,21 @@ router.get('/', function (req,res){
 router.get('/showtable', function (req,res){
     var pokemon = new (require('../models/pokemon.js'))();
     pokemon.user = req.authUser;
-    pokemon.showUserPokemons(function (data) {
+    pokemon.getByUser(function (data) {
         res.send(data);
     }, function (err) {
         res.sendStatus(400);
     });
 });
 
-router.post('/getpokemonlocation', binder(require('../models/pokemon.js')), function (req, res){
+router.post('/spawnpokemon', binder(require('../models/pokemon.js')), function (req, res){
     var pokemon = req.requestModel;
     pokemon.user = req.authUser;
-    pokemon.userLat = req.body.lat;
-    pokemon.userLng = req.body.lng;
-    pokemon.getLocation(function (data) {
-        res.send(data);
-    }, function (err) {
-        res.sendStatus(400);
+    pokemon.spawn({lat: req.body.lat, lng: req.body.lng
+        }, function (data) {
+            res.send(data);
+        }, function (err) {
+            res.sendStatus(400);
     });
 });
 
@@ -49,7 +48,7 @@ router.post('/catchpokemon', binder(require('../models/pokemon.js')), function (
     pokemon.user = req.authUser; //poslati i pokeid i sentid
     pokemon.catch(function (data) {
         res.send(data);
-    }, function () {
+    }, function (err) {
         res.sendStatus(400);
     });
 });
@@ -95,14 +94,14 @@ router.post('/respondtochallenge', binder(require('../models/challenge.js')), fu
     if (challenge.response == 'accept'){
         challenge.accept(function (data) {
             res.send(data);
-        }, function () {
+        }, function (err) {
             res.sendStatus(400);
         });
     }
     else {
         challenge.decline(function () {
             res.sendStatus(200);
-        }, function () {
+        }, function (err) {
             res.sendStatus(400);
         });
     }
@@ -114,7 +113,7 @@ router.post('/checkforaccept', binder(require('../models/challenge.js')), functi
     challenge.sender = req.authUser;
     challenge.checkForAccept(function(data){
         res.send(data);
-    },function(){
+    },function(err){
         res.sendStatus(400);
     });
 });
@@ -132,8 +131,8 @@ router.post('/selectpokemon', binder(require('../models/challenge.js')), functio
     challenge.id = req.body.challengeid;
     challenge.selectFighters(function () {
 
-    }, function () {
-
+    }, function (err) {
+        res.sendStatus(400);
     });
 });
 

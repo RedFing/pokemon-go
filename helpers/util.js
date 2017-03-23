@@ -36,6 +36,22 @@ var util = {
     hashPassword: function hashPassword(plainPass) {
         var hash = crypto.createHmac('sha256', 'abcdefg').update(plainPass).digest('hex');
         return hash;
+    },
+    generatePokemon: function generatePokemon(userLocation, allPokemons) {
+        // generate chances array
+        var chances = [];
+        for (var i = 0; i < allPokemons.length; i++){
+            var rarity = allPokemons[i].rarity;
+            for (var j = 0; j < rarity; j++){
+                chances.push(allPokemons[i].id);
+            }
+        }
+        var randomId = chances[Math.floor(Math.random() * chances.length)]; // select random array element
+        var selectedPokemon = allPokemons[randomId - 1]; // select pokemon with random id
+        var randomLocation = util.randomLocationInRadius100m(userLocation); // generate random spawn location
+        selectedPokemon['lat'] = randomLocation.lat;
+        selectedPokemon['lng'] = randomLocation.lng;
+        return selectedPokemon;
     }
 };
 

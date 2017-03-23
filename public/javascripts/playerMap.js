@@ -25,8 +25,8 @@ $('document').ready(function(){
 
 var pokeMarkers = [];
 var map;
+
 function initMap() {
-    console.log('initMap begin');
     var userPosition;
     var latlng = new google.maps.LatLng(-34.397, 150.644);
     map = new google.maps.Map(document.getElementById('map'), {
@@ -39,7 +39,6 @@ function initMap() {
             lng: position.coords.longitude
         };
         userPosition = pos;
-        console.log(pos);
         map.setCenter(pos);
         var ikonica = {
             url: "../you-marker.png",
@@ -72,29 +71,28 @@ function initMap() {
             radius: 3000
         });
         getPokemonLocation(pos,map);
-        setInterval(function(){getPokemonLocation(pos,map)}, 60000);
+        setInterval(function(){getPokemonLocation(pos,map)}, 6000);
         getOtherPlayersLocation(map);
     });
-    console.log('initMap end');
 }
 
 function getPokemonLocation(pos, map){
     var dataTosend = pos;
     $.ajax({
         type: "POST",
-        url: "/playermap/getpokemonlocation",
+        url: "/playermap/spawnpokemon",
         data: dataTosend,
         success: function(data){
-            id = data.id;
-            lok = data.lok;
+            id = data.sentpokemonsid;
+            var location = data.pokelocation;
             var pokeicon = {
                 url: "../pokemoni.png",
                 size: new google.maps.Size(80,80),
                 origin: new google.maps.Point(data.x * 80, data.y * 80)
             };
             marker = new google.maps.Marker({
-                position: lok,
-                id: data.id,
+                position: location,
+                id: data.sentpokemonsid,
                 map: map,
                 icon: pokeicon
             });
@@ -104,7 +102,7 @@ function getPokemonLocation(pos, map){
                 var ime = data.name.toLocaleLowerCase() + ".png";
                 $('.wrapper-img').html('<img src="../all-pokemons/'+ime+'" class="bigPicPokemon">');
                 $('#pokemonInfo').html('<p>HP: '+data.hp+'</p><br /><p>Attack: '+data.attack+'</p><br /><p>Defense: '+data.defense+'</p>')
-                $('#catchPokemonModalFooter').html('<button onclick="catchPokemon('+data.id+')">Catch</button>');
+                $('#catchPokemonModalFooter').html('<button onclick="catchPokemon('+data.sentpokemonsid+')">Catch</button>');
                 $('#catchPokemonModal').modal();
             });
         },
@@ -145,7 +143,7 @@ function catchPokemon(id) {
         url: "/playermap/catchpokemon",
         data: dataTosend,
         success: function(data){
-            if (data.success == true){
+            if (data.caught == true){
                 var msg = "You caught a pokemon: " + data.name;
                 alert(msg);
                 var customName = prompt("How shall we name it?");
