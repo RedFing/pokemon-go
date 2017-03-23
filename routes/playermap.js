@@ -12,7 +12,7 @@ router.get('/', function (req,res){
 });
 
 router.get('/showtable', function (req,res){
-    var pokemons = new (require('../models/pokemons.js'))();
+    var pokemons = new (require('../models/pokemon.js'))();
     pokemons.user = req.authUser;
     pokemons.showUserPokemons(function (data) {
         res.send(data);
@@ -21,7 +21,7 @@ router.get('/showtable', function (req,res){
     });
 });
 
-router.post('/getpokemonlocation', binder(require('../models/pokemons.js')), function (req,res){
+router.post('/getpokemonlocation', binder(require('../models/pokemon.js')), function (req, res){
     var pokemons = req.requestModel;
     pokemons.user = req.authUser;
     pokemons.userLat = req.body.lat;
@@ -34,7 +34,7 @@ router.post('/getpokemonlocation', binder(require('../models/pokemons.js')), fun
 });
 
 router.get('/getotherplayerslocation', function (req,res){
-    var users = new (require('../models/users.js'))();
+    var users = new (require('../models/user.js'))();
     users.user = req.authUser;
     users.getOtherUsersLocation(function (data) {
         res.send(data);
@@ -43,7 +43,7 @@ router.get('/getotherplayerslocation', function (req,res){
     });
 });
 
-router.post('/catchpokemon', binder(require('../models/pokemons.js')), function (req,res){
+router.post('/catchpokemon', binder(require('../models/pokemon.js')), function (req, res){
     var pokemons = req.requestModel;
     pokemons.id = req.body.id;
     pokemons.user = req.authUser;
@@ -54,7 +54,7 @@ router.post('/catchpokemon', binder(require('../models/pokemons.js')), function 
     });
 });
 
-router.post('/givecustomname', binder(require('../models/pokemons.js')), function (req,res){
+router.post('/givecustomname', binder(require('../models/pokemon.js')), function (req, res){
     var pokemons = req.requestModel;
     pokemons.customName = req.body.customName;
     pokemons.user = req.authUser;
@@ -139,7 +139,7 @@ router.post('/selectpokemon', binder(require('../models/challenge.js')), functio
 
 
 router.get('/logout', function (req, res) {
-    var users = new (require('../models/users.js'))();
+    var users = new (require('../models/user.js'))();
     users.user = req.authUser;
     users.logOut(function(){
        res.redirect('/');

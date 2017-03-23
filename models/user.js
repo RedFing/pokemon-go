@@ -6,11 +6,13 @@
 var pool = require('../config-postgreSQL');
 var util = require('../helpers/util');
 //TODO promijeniti users -> user
-function users() {
+function user() {
     var $this = this;
     this.user = "";
     this.username = this.firstname = this.lastname = this.pass = "";
     this.oldUsername = "";
+    this.databaseError = "";
+    this.httpError = "";
     this.getOtherUsersLocation = function (success, error) {//TODO uzimati manje korisnika iz baze
         var response = [];
         console.log("getting location");
@@ -50,7 +52,11 @@ function users() {
             if(err) {
                 console.log(err);//TODO vratiti error sa baze
                 //res.sendStatus(400);
-                error(400);
+                error(
+                    $this.databaseError = err,
+                    $this.httpError = 400
+                    //400
+                );
             }
             else {
                 //res.sendStatus(200);
@@ -90,5 +96,5 @@ function users() {
 
 }
 
-module.exports = users;
+module.exports = user;
 
