@@ -10,6 +10,7 @@ function pokemon() {
     this.user = this.name = this.customName = "";
     this.id = this.x = this.y = this.pokemontypeid = 0;
 
+    // gets all pokemons that user has
     this.getByUser = function (success, error){
         pool.query('select pokemontype.name, playerpokemon.customname from pokemontype INNER JOIN ' +
             'playerpokemon on pokemontype.id = playerpokemon.pokemontypeid where username=$1', [$this.user], function(err, result) {
@@ -64,13 +65,7 @@ function pokemon() {
                 else {
                     success({
                         sentpokemonsid: result2.rows[0].id,
-                        name: generatedPokemon.name,
-                        x: generatedPokemon.x,
-                        y: generatedPokemon.y,
-                        hp: generatedPokemon.hp,
-                        attack: generatedPokemon.attack,
-                        defense: generatedPokemon.defense,
-                        pokelocation: {lat: generatedPokemon.lat, lng: generatedPokemon.lng}
+                        pokemon: generatedPokemon
                     });
                 }
             });
