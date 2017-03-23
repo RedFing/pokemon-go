@@ -33,7 +33,7 @@ router.post('/spawnpokemon', binder(require('../models/pokemon.js')), function (
 });
 
 router.get('/getotherplayerslocation', function (req,res){
-    var users = new (require('../models/users.js'))();
+    var users = new (require('../models/user.js'))();
     users.user = req.authUser;
     users.getOtherUsersLocation(function (data) {
         res.send(data);
@@ -137,7 +137,7 @@ router.post('/selectpokemon', binder(require('../models/challenge.js')), functio
 });
 
 router.get('/logout', function (req, res) {
-    var users = new (require('../models/users.js'))();
+    var users = new (require('../models/user.js'))();
     users.user = req.authUser;
     users.logOut(function(){
        res.redirect('/');

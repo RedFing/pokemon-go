@@ -6,7 +6,7 @@
 var pool = require('../config-postgreSQL');
 var util = require('../helpers/util');
 
-function users() {
+function user() {
     var $this = this;
     this.user = "";
     this.username = this.firstname = this.lastname = this.pass = "";
@@ -91,5 +91,5 @@ function users() {
 
 }
 
-module.exports = users;
+module.exports = user;
 

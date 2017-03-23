@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
     res.render('adminPanel');
 });
 
-router.get('/player/',binder(require('../models/users')), function(req, res) {
+router.get('/player/',binder(require('../models/user')), function(req, res) {
     var user = req.requestModel;
     user.showUsers(function (success) {
         res.render('player', {result: success});
@@ -20,7 +20,7 @@ router.get('/player/',binder(require('../models/users')), function(req, res) {
         res.send(error);
     });
 });
-router.post('/player/add', binder(require('../models/users')), function (req, res) {
+router.post('/player/add', binder(require('../models/user')), function (req, res) {
     var user = req.requestModel;
     user.username = req.body.uname;
     user.firstname = req.body.firstname;
@@ -34,7 +34,7 @@ router.post('/player/add', binder(require('../models/users')), function (req, re
     });
 });
 
-router.delete('/player/delete',binder(require('../models/users')), function (req,res) {
+router.delete('/player/delete',binder(require('../models/user')), function (req, res) {
     var user = req.requestModel;
     user.username = req.body.uname;
     user.deleteUser(function (success) {
@@ -44,7 +44,7 @@ router.delete('/player/delete',binder(require('../models/users')), function (req
     });
 });
 
-router.post('/player/edit', binder(require('../models/users')), function(req, res) {
+router.post('/player/edit', binder(require('../models/user')), function(req, res) {
     //var {unameOld, unameNew, firstnameNew, lastnameNew} = req.body;
     var user = req.requestModel;
     user.oldUsername = req.body.unameOld;
