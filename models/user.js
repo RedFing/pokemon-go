@@ -12,7 +12,8 @@ function user() {
     this.username = this.firstname = this.lastname = this.pass = "";
     this.oldUsername = "";
     this.lat = this.lon = "";
-    this.getOtherUsersLocation = function (success, error) {
+
+    this.getNearby = function (success, error) {
         var response = [];
         pool.query('Select * from player where isonline=true', function(err, result){
             var userLoc;
@@ -44,7 +45,7 @@ function user() {
         });
     };
 
-    this.createUser = function (success, error) {//TODO vratiti error sa baze
+    this.create = function (success, error) {//TODO vratiti error sa baze
         pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [$this.username, $this.firstname, $this.lastname, util.hashPassword($this.pass)], function(err, result) {
             if(err) {
                 console.log(err);
@@ -58,7 +59,7 @@ function user() {
         });
     };
 
-    this.deleteUser = function (success, error) {
+    this.delete = function (success, error) {
         pool.query("delete from player where username = $1" , [$this.username], function(err, result) {
             if(err)
                 error(400);
@@ -66,7 +67,7 @@ function user() {
                 success(200);
         });
     };
-    this.editUser = function (success, error) {
+    this.edit = function (success, error) {
         pool.query("update player set username=$1, firstname=$2, lastname=$3 where username=$4 returning *", [$this.username, $this.firstname,
             $this.lastname, $this.oldUsername], function(err, result) {
             if(err)

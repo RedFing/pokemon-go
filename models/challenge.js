@@ -15,6 +15,7 @@ function challenge() {
         pool.query('insert into challenges (sender,recipient,dateofcreation,delivered,response)values($1,$2,localtimestamp, false, $3) returning id',
             [$this.sender, $this.recipient, 'none'], function(err, result){
             if (err) {
+                console.log(err);
                 error(err);
             }
             else {

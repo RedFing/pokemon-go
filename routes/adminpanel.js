@@ -17,7 +17,7 @@ router.get('/', function(req, res) {
 
 router.get('/player/',binder(require('../models/user')), function(req, res) {
     var user = req.requestModel;
-    user.showUsers(function (success) {
+    user.show(function (success) {
         res.render('player', {result: success});
     }, function (error) {
         res.send(error);
@@ -29,7 +29,7 @@ router.post('/player/add', binder(require('../models/user')), function (req, res
     user.firstname = req.body.firstname;
     user.lastname = req.body.lastname;
     user.pass = req.body.password;
-    user.createUser(function (success) {
+    user.create(function (success) {
         res.sendStatus(success);
 
     }, function (error) {
@@ -40,7 +40,7 @@ router.post('/player/add', binder(require('../models/user')), function (req, res
 router.delete('/player/delete',binder(require('../models/user')), function (req, res) {
     var user = req.requestModel;
     user.username = req.body.uname;
-    user.deleteUser(function (success) {
+    user.delete(function (success) {
         res.sendStatus(success);
     }, function (error) {
         res.sendStatus(error);
@@ -54,7 +54,7 @@ router.post('/player/edit', binder(require('../models/user')), function(req, res
     user.username = req.body.unameNew;
     user.firstname = req.body.firstnameNew;
     user.lastname = req.body.lastnameNew;
-    user.editUser(function (success) {
+    user.edit(function (success) {
         res.send(success);
     }, function (error) {
         res.sendStatus(error);

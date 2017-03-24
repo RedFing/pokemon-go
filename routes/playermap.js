@@ -44,10 +44,10 @@ router.post('/spawnpokemon', binder(require('../models/pokemon.js')), function (
     });
 });
 
-router.get('/getotherplayerslocation', function (req,res){
-    var users = new (require('../models/user.js'))();
-    users.user = req.authUser;
-    users.getOtherUsersLocation(function (data) {
+router.get('/getnearbyplayers', function (req,res){
+    var user = new (require('../models/user.js'))();
+    user.user = req.authUser;
+    user.getNearby(function (data) {
         res.send(data);
     }, function (err) {
         res.sendStatus(400);
