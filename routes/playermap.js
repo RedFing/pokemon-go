@@ -44,9 +44,11 @@ router.post('/spawnpokemon', binder(require('../models/pokemon.js')), function (
     });
 });
 
-router.get('/getnearbyplayers', function (req,res){
+router.post('/getnearbyplayers', function (req,res){
     var user = new (require('../models/user.js'))();
     user.user = req.authUser;
+    user.lat = req.body.lat;
+    user.lon = req.body.lng;
     user.getNearby(function (data) {
         res.send(data);
     }, function (err) {

@@ -9,7 +9,7 @@ var binder = require('model-binder');
 
 //TODO cookie->session
 //TODO ejs ->react, interceptor, authorize
-//TODO dodato chat izmedju dvojice boraca
+//TODO dodati chat izmedju dvojice boraca
 //TODO socketIO, multer
 router.get('/', function(req, res) {
     res.render('adminPanel');
@@ -20,7 +20,7 @@ router.get('/player/',binder(require('../models/user')), function(req, res) {
     user.show(function (success) {
         res.render('player', {result: success});
     }, function (error) {
-        res.send(error);
+        res.sendStatus(400);
     });
 });
 router.post('/player/add', binder(require('../models/user')), function (req, res) {
@@ -33,7 +33,7 @@ router.post('/player/add', binder(require('../models/user')), function (req, res
         res.sendStatus(success);
 
     }, function (error) {
-        res.sendStatus(error);
+        res.sendStatus(400);
     });
 });
 
@@ -43,7 +43,7 @@ router.delete('/player/delete',binder(require('../models/user')), function (req,
     user.delete(function (success) {
         res.sendStatus(success);
     }, function (error) {
-        res.sendStatus(error);
+        res.sendStatus(400);
     });
 });
 
@@ -57,7 +57,7 @@ router.post('/player/edit', binder(require('../models/user')), function(req, res
     user.edit(function (success) {
         res.send(success);
     }, function (error) {
-        res.sendStatus(error);
+        res.sendStatus(400);
     });
 });
 
