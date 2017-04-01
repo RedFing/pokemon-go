@@ -60,7 +60,7 @@ function authenticator(settings) {
                 res.sendStatus(403);
                 return;
             }
-            //TODO prebaciti u 1 query, uslov ifa nema smisla
+            //TODO merge into 1 query, condition in if is redudant
             pool.query("Select * from player where username=$1", [token.username], function (err, result) {
                 if (result.rows[0].username != token.username)
                     res.sendStatus(403);

@@ -4,8 +4,6 @@
 
 var pool = require('../config-postgreSQL');
 
-//TODO spojiti accept i check for accept fukncije u jednu
-
 function challenge() {
     var $this = this;
     this.sender = this.recipient = this.sendersocketid = this.recipientsocketid = this.response = this.player = "";
