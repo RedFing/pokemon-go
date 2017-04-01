@@ -4,20 +4,24 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var socket_io = require("socket.io");
+var socketCookieParser = require('socket.io-cookie');
 
 var index = require('./routes/index');
-var adminpanel = require('./routes/adminpanel')
+var adminpanel = require('./routes/adminpanel');
 var playermap = require('./routes/playermap');
 
-var pool = require('./config-postgreSQL');
 const crypto = require('crypto');
-
-const secret = 'abcdefg';
 var moment = require('moment');
 
 var app = express();
 
+var io = socket_io();
+app.io = io;
+require('./sockets/challengeController')(io);
+
 var authenticator = require('./helpers/authenticator');
+var socketAuth = require('./helpers/socket-auth');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -49,7 +53,6 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -60,5 +63,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+io.use(socketCookieParser);
+io.use(socketAuth({}));
+
 
 module.exports = app;
