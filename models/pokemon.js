@@ -23,6 +23,17 @@ function pokemon() {
         });
     };
 
+    this.getById = function (success, error) {
+        pool.query('select * from pokemontype where id=$1', [$this.id], function(err, result) {
+            if (err){
+                error(err);
+            }
+            else {
+                success(result.rows[0]);
+            }
+        });
+    };
+
     this.catch = function (success, error) {
         //check if requested pokemon is still "valid", then get his catchchance and pokemontypeid
         pool.query('select * from pokemontype where id=(select pokemontypeid from sentpokemons where id=$1 and expiretimestamp > localtimestamp)', [$this.id], function (err, result) {
