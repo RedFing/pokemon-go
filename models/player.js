@@ -4,12 +4,8 @@
 var pool = require('../config-postgreSQL');
 var util = require('../helpers/util');
 
-//TODO priority!!! change model name to player instead of user, reason: user.user or user.username
-//TODO delete the user attribute, user only username
-
-function user() {
+function player() {
     var $this = this;
-    this.user = ""; //TODO delete this
     this.username = this.firstname = this.lastname = this.pass = "";
     this.oldUsername = "";
     this.lat = this.lon = "";
@@ -17,13 +13,13 @@ function user() {
 
     this.getNearby = function (success, error) {
         var response = [];
-        pool.query('Select * from player where isonline=true and username != $1', [$this.user], function(err, result){
+        pool.query('Select * from player where isonline=true and username != $1', [$this.username], function(err, result){
             if (err){
                 error(err);
             }
             else {
                 for (var i = 0; i < result.rows.length; i++) {
-                    if (result.rows[i].username != $this.user) {
+                    if (result.rows[i].username != $this.username) {
                         if (util.checkIfInRadius($this.lat, $this.lon, result.rows[i].lat, result.rows[i].lon)) {
                             var userData = {
                                 username: result.rows[i].username,
@@ -52,7 +48,7 @@ function user() {
     };
 
     this.updateSocketId = function (success, error) {
-        pool.query("update player set socketid=$1 where username=$2 returning *", [$this.socketid, $this.user], function (err, result) {
+        pool.query("update player set socketid=$1 where username=$2 returning *", [$this.socketid, $this.username], function (err, result) {
             if(err){
                 error(err);
             }
@@ -75,7 +71,7 @@ function user() {
     };
 
     this.logOut = function (success, error) {
-        pool.query('update player set isonline=false where username=$1', [$this.user], function(err, result){
+        pool.query('update player set isonline=false where username=$1', [$this.username], function(err, result){
             if (err){
                 error();
             }
@@ -85,7 +81,7 @@ function user() {
         });
     };
 
-    this.create = function (success, error) {//TODO vratiti error sa baze
+    this.create = function (success, error) {
         pool.query('insert into player values ($1,$2,$3,$4,0,0,false)', [$this.username, $this.firstname, $this.lastname, util.hashPassword($this.pass)], function(err, result) {
             if(err) {
                 console.log(err);
@@ -116,8 +112,8 @@ function user() {
         });
 
     };
-
-    this.showUsers = function (success, error) {
+    //TODO limit number of returned
+    this.showPlayers = function (success, error) {
         pool.query('Select * from player', function(err, result) {
             if(err)
                 error(err);
@@ -140,5 +136,5 @@ function user() {
 
 }
 
-module.exports = user;
+module.exports = player;
 

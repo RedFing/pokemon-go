@@ -11,12 +11,12 @@ router.get('/', function (req,res){
     res.render('playerMap');
 });
 
-router.post('/updateuserlocation', function (req,res){
-    var user = new (require('../models/user.js'))();
-    user.lat = req.body.lat;
-    user.lon = req.body.lng;
-    user.username = req.authUser;
-    user.updateLocation(function () {
+router.post('/updateplayerlocation', function (req,res){
+    var player = new (require('../models/player.js'))();
+    player.lat = req.body.lat;
+    player.lon = req.body.lng;
+    player.username = req.authUser;
+    player.updateLocation(function () {
         res.sendStatus(200);
     }, function () {
         res.sendStatus(400);
@@ -45,11 +45,11 @@ router.post('/spawnpokemon', binder(require('../models/pokemon.js')), function (
 });
 
 router.post('/getnearbyplayers', function (req,res){
-    var user = new (require('../models/user.js'))();
-    user.user = req.authUser;
-    user.lat = req.body.lat;
-    user.lon = req.body.lng;
-    user.getNearby(function (data) {
+    var player = new (require('../models/player.js'))();
+    player.username = req.authUser;
+    player.lat = req.body.lat;
+    player.lon = req.body.lng;
+    player.getNearby(function (data) {
         res.send(data);
     }, function (err) {
         res.sendStatus(400);
@@ -79,81 +79,10 @@ router.post('/givecustomname', binder(require('../models/pokemon.js')), function
     });
 });
 
-router.post('/sendchallenge', binder(require('../models/challenge.js')), function (req,res){
-   var challenge = req.requestModel;
-   challenge.sender = req.authUser;
-   challenge.recipient = req.body.recipient;
-   challenge.create(function (data) {
-       res.send(data);
-   }, function (err) {
-       res.sendStatus(400);
-   });
-});
-
-router.get('/getchallenge', function (req,res){
-    var challenge = new (require('../models/challenge.js'))();
-    challenge.recipient = req.authUser;
-    challenge.getByRecipient(function (data) {
-        res.send(data);
-    }, function (err) {
-        res.sendStatus(400);
-    });
-});
-
-router.post('/respondtochallenge', binder(require('../models/challenge.js')), function (req,res){
-    var challenge = req.requestModel;
-    challenge.id = req.body.id;
-    challenge.recipient = req.authUser;
-    challenge.response = req.body.response;
-    if (challenge.response == 'accept'){
-        challenge.accept(function (data) {
-            res.send(data);
-        }, function (err) {
-            res.sendStatus(400);
-        });
-    }
-    else {
-        challenge.decline(function () {
-            res.sendStatus(200);
-        }, function (err) {
-            res.sendStatus(400);
-        });
-    }
-});
-
-router.post('/checkforaccept', binder(require('../models/challenge.js')), function (req,res){
-    var challenge = req.requestModel;
-    challenge.id = req.body.id;
-    challenge.sender = req.authUser;
-    challenge.checkForAccept(function(data){
-        res.send(data);
-    },function(err){
-        res.sendStatus(400);
-    });
-});
-
-router.post('/selectpokemon', binder(require('../models/challenge.js')), function (req,res){
-    var challenge = req.requestModel;
-    if (req.body.usertype == 'senderP'){
-        challenge.sender = req.authUser;
-        challenge.senderPokemontype = req.body.pokemonid;
-    }
-    else {
-        challenge.recipient = req.authUser;
-        challenge.recipientPokemontype = req.body.pokemonid;
-    }
-    challenge.id = req.body.challengeid;
-    challenge.selectFighters(function () {
-
-    }, function (err) {
-        res.sendStatus(400);
-    });
-});
-
 router.get('/logout', function (req, res) {
-    var users = new (require('../models/user.js'))();
-    users.user = req.authUser;
-    users.logOut(function(){
+    var player = new (require('../models/player.js'))();
+    player.username = req.authUser;
+    player.logOut(function(){
        res.redirect('/');
     }, function () {
         res.sendStatus(400);

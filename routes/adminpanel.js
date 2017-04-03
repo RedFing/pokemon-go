@@ -15,21 +15,21 @@ router.get('/', function(req, res) {
     res.render('adminPanel');
 });
 
-router.get('/player/',binder(require('../models/user')), function(req, res) {
-    var user = req.requestModel;
-    user.show(function (success) {
+router.get('/player/',binder(require('../models/player')), function(req, res) {
+    var player = req.requestModel;
+    player.show(function (success) {
         res.render('player', {result: success});
     }, function (error) {
         res.sendStatus(400);
     });
 });
-router.post('/player/add', binder(require('../models/user')), function (req, res) {
-    var user = req.requestModel;
-    user.username = req.body.uname;
-    user.firstname = req.body.firstname;
-    user.lastname = req.body.lastname;
-    user.pass = req.body.password;
-    user.create(function (success) {
+router.post('/player/add', binder(require('../models/player')), function (req, res) {
+    var player = req.requestModel;
+    player.username = req.body.uname;
+    player.firstname = req.body.firstname;
+    player.lastname = req.body.lastname;
+    player.pass = req.body.password;
+    player.create(function (success) {
         res.sendStatus(success);
 
     }, function (error) {
@@ -37,24 +37,24 @@ router.post('/player/add', binder(require('../models/user')), function (req, res
     });
 });
 
-router.delete('/player/delete',binder(require('../models/user')), function (req, res) {
-    var user = req.requestModel;
-    user.username = req.body.uname;
-    user.delete(function (success) {
+router.delete('/player/delete',binder(require('../models/player')), function (req, res) {
+    var player = req.requestModel;
+    player.username = req.body.uname;
+    player.delete(function (success) {
         res.sendStatus(success);
     }, function (error) {
         res.sendStatus(400);
     });
 });
 
-router.post('/player/edit', binder(require('../models/user')), function(req, res) {
+router.post('/player/edit', binder(require('../models/player')), function(req, res) {
     //var {unameOld, unameNew, firstnameNew, lastnameNew} = req.body;
-    var user = req.requestModel;
-    user.oldUsername = req.body.unameOld;
-    user.username = req.body.unameNew;
-    user.firstname = req.body.firstnameNew;
-    user.lastname = req.body.lastnameNew;
-    user.edit(function (success) {
+    var player = req.requestModel;
+    player.oldUsername = req.body.unameOld;
+    player.username = req.body.unameNew;
+    player.firstname = req.body.firstnameNew;
+    player.lastname = req.body.lastnameNew;
+    player.edit(function (success) {
         res.send(success);
     }, function (error) {
         res.sendStatus(400);

@@ -78,7 +78,7 @@ function updateUserLocation(pos){
     console.log("saljem: ", pos);
     $.ajax({
         type: "POST",
-        url: "/playermap/updateuserlocation",
+        url: "/playermap/updateplayerlocation",
         data: pos,
         success: function(){
         },
