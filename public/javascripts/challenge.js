@@ -7,9 +7,10 @@ $('document').ready(function(){
     socket.on('deliverChallenge', function(data){
         alert('You have received a new challenge');
         addRowToChallengesTable(data);
-
     });
     socket.on('startFight', function(data){makeFightModal(data);});
+    socket.on('fight', function(data){ removeHpBars(data);});
+    socket.on('fightOver', function (data) {declareWinner(data);});
 });
 
 function sendChallenge(username){
@@ -83,7 +84,6 @@ function makeChoosePokemonModal(data){
 }
 
 function makeFightModal(data){
-    console.log(data);
     $('#fightModalHeading').html(data.senderPokemon.name + " vs " + data.recipientPokemon.name);
     var leftPicSrc = "../all-pokemons/" + data.senderPokemon.name.toLocaleLowerCase() + ".png";
     var rightPicSrc = "../all-pokemons/" + data.recipientPokemon.name.toLocaleLowerCase() + ".png";
@@ -91,13 +91,44 @@ function makeFightModal(data){
     $('#rightPic').html('<img src="'+rightPicSrc+'">');
     var htmlHP = "";
     for (var i = 0; i < data.senderPokemon.hp; i++){
-        htmlHP += '<div class=hpBox></div>'
+        if (i % 10 == 0 && i != 0) htmlHP += '<div class="spacer"></div>';
+        htmlHP += '<div class=hpBox></div>';
     }
     $('#leftHP').html(htmlHP);
     htmlHP = "";
     for (var i = 0; i < data.recipientPokemon.hp; i++){
-        htmlHP += '<div class=hpBox></div>'
+        if (i % 10 == 0 && i != 0) htmlHP += '<div class="spacer"></div>';
+        htmlHP += '<div class=hpBox></div>';
     }
     $('#rightHP').html(htmlHP);
     $('#fightModal').modal();
+    socket.emit("readyForFight", data.challengeid);
+}
+
+function removeHpBars(data){
+    if (data.defender == "recipientPokemon"){
+        $('#rightHP > .hpBox').slice(-1 * data.damageDelivered).remove();
+        $('#rightDI').html("-"+ data.damageDelivered);
+        $('#rightDI').animate({opacity: 1}, 350);
+        $('#rightDI').animate({opacity: 0.01}, 1500);
+    }
+    else {
+        $('#leftHP > .hpBox').slice(-1 * data.damageDelivered).remove();
+        $('#leftDI').html("-"+ data.damageDelivered);
+        $('#leftDI').animate({opacity: 1}, 350);
+        $('#leftDI').animate({opacity: 0.01}, 1500);
+    }
+
+}
+
+function declareWinner(data){
+    if (data == 'left'){
+        $('#leftDI').animate({opacity: 1}, 350);
+        $('#leftDI').html("WINNER!");
+    }
+    else {
+        $('#rightDI').animate({opacity: 1}, 350);
+        $('#rightDI').html("WINNER!");
+    }
+    setTimeout(function() {  $('#fightModal').modal('hide') }, 2000);
 }
