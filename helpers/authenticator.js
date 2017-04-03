@@ -60,13 +60,11 @@ function authenticator(settings) {
                 res.sendStatus(403);
                 return;
             }
-            //TODO merge into 1 query, condition in if is redudant
-            pool.query("Select * from player where username=$1", [token.username], function (err, result) {
-                if (result.rows[0].username != token.username)
+            pool.query('Update player set isonline=true where username=$1 returning username', [token.username], function (err, result) {
+                if (result.rows[0].length == 0)
                     res.sendStatus(403);
                 else {
-                    req.authUser = token.username;
-                    pool.query("Update player set isonline=true where username=$1", [token.username]);
+                    req.authUser = result.rows[0].username;
                     next();
                 }
             });
