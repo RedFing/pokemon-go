@@ -113,7 +113,7 @@ function player() {
 
     };
     //TODO limit number of returned
-    this.showPlayers = function (success, error) {
+    this.show = function (success, error) {
         pool.query('Select * from player', function(err, result) {
             if(err)
                 error(err);

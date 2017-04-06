@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var socket_io = require("socket.io");
 var socketCookieParser = require('socket.io-cookie');
-
+var chat = require('./routes/chat');
 var index = require('./routes/index');
 var adminpanel = require('./routes/adminpanel');
 var playermap = require('./routes/playermap');
@@ -44,7 +44,7 @@ app.use(authenticator({
 
 app.use('/', index);
 app.use('/adminpanel', adminpanel);
-
+app.use('/chat', chat);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

@@ -30,7 +30,8 @@ router.post('/player/add', binder(require('../models/player')), function (req, r
     player.lastname = req.body.lastname;
     player.pass = req.body.password;
     player.create(function (success) {
-        res.sendStatus(success);
+        res.sendStatus(200);
+        console.log(success);
 
     }, function (error) {
         res.sendStatus(400);
@@ -41,9 +42,10 @@ router.delete('/player/delete',binder(require('../models/player')), function (re
     var player = req.requestModel;
     player.username = req.body.uname;
     player.delete(function (success) {
-        res.sendStatus(success);
+        res.sendStatus(200);
     }, function (error) {
         res.sendStatus(400);
+        console.log(error);
     });
 });
 
