@@ -27,8 +27,7 @@ function authenticator(settings) {
                 }
             } // REACT_NATIVE_LOGIN
             else if (routeToCheck == '/login_api'){
-                console.log('usao u api login rutu');
-                console.log(req.body);
+                
                 if (!validateEmail(req.body.unmLogin)) {
                   var errorJSON = {
                     status: 'ERROR',
@@ -90,7 +89,6 @@ function authenticator(settings) {
             // REACT_NATIVE
             if (req.query.rntoken){
                 ///////
-                console.log('usao u provjeru ');
                 var token = util.decipherCookie(req.query.rntoken);
                 if (moment().isAfter(token.valid)) {
                     res.json({ status: 'ERROR'});
@@ -102,7 +100,6 @@ function authenticator(settings) {
 
                         res.json({status: 'ERROR'});
                     else {
-                        console.log('uspio?=?');
                         req.authUser = result.rows[0].username;
                         next();
                     }
