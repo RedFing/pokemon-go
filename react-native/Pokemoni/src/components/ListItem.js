@@ -4,7 +4,7 @@ import { CardSection } from './common';
 
 class ListItem extends Component {
   onRowPress() {
-    // navigator na modal????
+    // TODO: modal on selected pokemon with extra info
   }
 
   render() {

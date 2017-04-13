@@ -35,12 +35,11 @@ class PokemonList extends Component {
 
   render() {
     return (
-      <Text>test1</Text>
-  //    <ListView
-  //      enableEmptySections
-  //      dataSource={this.dataSource}
-  //      renderRow={this.renderRow}
-  //    />
+      <ListView
+        enableEmptySections
+       dataSource={this.dataSource}
+        renderRow={this.renderRow}
+      />
     );
   }
 }

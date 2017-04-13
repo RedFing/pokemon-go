@@ -10,7 +10,6 @@ import PokemonList from './components/PokemonList';
 import TestComponent from './components/TestComponent';
 
 class App extends Component {
-  state = { globalToken: '' };
   render() {
     const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
 
@@ -29,7 +28,7 @@ class Navs extends Component {
       case 'login':
         return (<LoginForm navigator={navigator} />);
       case 'pokemonlist':
-        return (<TestComponent navigator={navigator} />);
+        return (<PokemonList navigator={navigator} />);
       default:
         return (<TestComponent navigator={navigator} />);
     }

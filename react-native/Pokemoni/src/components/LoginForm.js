@@ -5,7 +5,12 @@ import { emailChanged, passwordChanged, loginUser } from '../actions';
 import { Card, CardSection, Input, Button, Spinner } from './common';
 
 class LoginForm extends Component {
-
+  componentWillReceiveProps(newProps){
+    if (newProps.successLogin === true){
+      // uspio login, salji na listu pokemona screen
+      this.props.navigator.push({ id: 'pokemonlist' });
+    }
+  }
   onEmailChange(text) {
     this.props.emailChanged(text);
   }
